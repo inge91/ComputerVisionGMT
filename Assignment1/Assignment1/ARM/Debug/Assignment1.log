@@ -1,8 +1,0 @@
-﻿Build started 14-11-2013 13:25:48.
-     1>Project "C:\Users\Inge\documents\visual studio 2012\Projects\Computer Vision\Assignment1\Assignment1\Assignment1.vcxproj" on node 2 (Build target(s)).
-     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Platforms\ARM\PlatformToolsets\v110\Microsoft.Cpp.ARM.v110.targets(36,5): error MSB8022: Compiling Desktop applications for the ARM platform is not supported.
-     1>Done Building Project "C:\Users\Inge\documents\visual studio 2012\Projects\Computer Vision\Assignment1\Assignment1\Assignment1.vcxproj" (Build target(s)) -- FAILED.
-
-Build FAILED.
-
-Time Elapsed 00:00:00.03
