@@ -1,24 +1,14 @@
-﻿Build started 17-11-2013 22:08:30.
-     1>Project "C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 1\Assignment 1\Assignment 1.vcxproj" on node 2 (Build target(s)).
+﻿Build started 18-11-2013 11:13:02.
+     1>Project "C:\Users\Meri\ComputerVisionGMT\Assignment 1\Assignment 1\Assignment 1.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /IC:\opencv246\build\bin\..\include /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\\" /AI"C:\Program Files (x86)\Windows Kits\8.0\References\CommonConfiguration\Neutral" /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\Facades\\" /Zi /clr /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _UNICODE /D UNICODE /EHa /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /TP /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\mscorlib.dll" /analyze- /errorReport:prompt /clr:nostdlib camera_calibration.cpp main.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\\" /AI"C:\Program Files (x86)\Windows Kits\8.0\References\CommonConfiguration\Neutral" /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\Facades\\" /Zi /clr /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _UNICODE /D UNICODE /EHa /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /TP /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\mscorlib.dll" /analyze- /errorReport:prompt /clr:nostdlib camera_calibration.cpp main.cpp
          camera_calibration.cpp
-     1>camera_calibration.cpp(475): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\time.inl(112) : see declaration of 'localtime'
-     1>camera_calibration.cpp(498): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdio.h(357) : see declaration of 'sprintf'
+     1>camera_calibration.cpp(6): fatal error C1083: Cannot open include file: 'opencv2/core/core.hpp': No such file or directory
          main.cpp
+     1>main.cpp(1): fatal error C1083: Cannot open include file: 'opencv/cv.h': No such file or directory
          Generating Code...
-     1>c:\opencv246\build\include\opencv2\core\types_c.h(312): warning C4793: 'cvRound' : function compiled as native :
-         	Inline native assembly not supported in managed code
-       Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 1\Debug\Assignment 1.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\opencv246\build\bin\..\x86\vc11\lib opencv_core246d.lib opencv_imgproc246d.lib opencv_highgui246d.lib opencv_ml246d.lib opencv_video246d.lib opencv_features2d246d.lib opencv_calib3d246d.lib opencv_objdetect246d.lib opencv_contrib246d.lib opencv_legacy246d.lib opencv_flann246d.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 1\Debug\Assignment 1.pdb" /ASSEMBLYDEBUG /TLBID:1 /DYNAMICBASE /FIXED:NO /NXCOMPAT /MACHINE:X86 Debug\camera_calibration.obj
-         Debug\main.obj
-         "Debug\.NETFramework,Version=v4.5.AssemblyAttributes.obj"
-     1>camera_calibration.obj : warning LNK4248: unresolved typeref token (01000014) for 'CvFileStorage'; image may not run
-         Assignment 1.vcxproj -> C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 1\Debug\Assignment 1.exe
-     1>Done Building Project "C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 1\Assignment 1\Assignment 1.vcxproj" (Build target(s)).
+     1>Done Building Project "C:\Users\Meri\ComputerVisionGMT\Assignment 1\Assignment 1\Assignment 1.vcxproj" (Build target(s)) -- FAILED.
 
-Build succeeded.
+Build FAILED.
 
-Time Elapsed 00:00:05.89
+Time Elapsed 00:00:00.67
