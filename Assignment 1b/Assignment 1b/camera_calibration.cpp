@@ -214,11 +214,13 @@ enum { DETECTION = 0, CAPTURING = 1, CALIBRATED = 2 };
 bool runCalibrationAndSave(Settings& s, Size imageSize, Mat&  cameraMatrix, Mat& distCoeffs,
                            vector<vector<Point2f> > imagePoints );
 
-int main(int argc, char* argv[])
+
+
+int startCalibration()
 {
     help();
     Settings s;
-    const string inputSettingsFile = argc > 1 ? argv[1] : "default.xml";
+    const string inputSettingsFile = "test.xml";
     FileStorage fs(inputSettingsFile, FileStorage::READ); // Read the settings
     if (!fs.isOpened())
     {
@@ -556,4 +558,57 @@ bool runCalibrationAndSave(Settings& s, Size imageSize, Mat&  cameraMatrix, Mat&
         saveCameraParams( s, imageSize, cameraMatrix, distCoeffs, rvecs ,tvecs, reprojErrs,
                             imagePoints, totalAvgErr);
     return ok;
+}
+
+int main(int argc, char* argv[])
+{
+	// Perform the calibration
+	//startCalibration();
+
+	FileStorage fs;
+	fs.open("out_camera_data.xml", FileStorage::READ);
+
+	if(fs.isOpened())
+	{
+		cout<<"File is opened \n";
+	}
+	
+	// Retrieve camera matrix
+	Mat cameraMatrix;
+	fs["Camera_Matrix"] >> cameraMatrix;
+	std::cout<<cameraMatrix<<endl;
+
+	// Retrieve Extrinsic Parameters
+	Mat extrinsicParams;
+	fs["Extrinsic_Parameters"] >> extrinsicParams;
+
+	// Board points
+	Mat boardPoints;
+	fs["Image_points"] >> boardPoints;
+
+
+	Mat image;
+	image = imread("Images\\board1.jpg", CV_LOAD_IMAGE_COLOR);
+    Size s = image.size();
+
+	Mat board1;
+	Mat board2;
+	// Row chosen should depend on the image chosen
+	board1 = boardPoints.row(0);
+
+	// Draws all the points on the corners found
+	for(int j = 0; j < board1.cols*2; j+=2)
+	{
+		float x = board1.at<float>(0,j);
+		float y = board1.at<float>(0,j+1);
+
+		circle(image, Point(x, y), 10, cv::Scalar(50, 0, 0), 1);
+	}
+	imshow("Assignment1", image);
+	waitKey(0);
+
+	// Wait for user input
+	
+	fs.release();
+	return(0);
 }
