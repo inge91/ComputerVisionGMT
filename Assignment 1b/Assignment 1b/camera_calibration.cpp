@@ -600,66 +600,29 @@ Mat construct_extrinsic(Mat data, int i)
 	double y_t = ImgParams.at<double>(4);
 	double z_t = ImgParams.at<double>(5);
 
-	// Construct rotaiton matrices
-	Mat rotX = Mat(3, 3, CV_64F);
-	rotX.row(0).col(0) = 1;
-	rotX.row(1).col(0) = 0;
-	rotX.row(2).col(0) = 0;
-	rotX.row(0).col(1) = 0;
-	rotX.row(1).col(1) = cos(x_r);
-	rotX.row(2).col(1) = sin(x_r);
-	rotX.row(0).col(2) = 0;
-	rotX.row(1).col(2) = -sin(x_r);
-	rotX.row(2).col(2) = cos(x_r);
-	cout<<rotX<<endl;
-	
-	Mat rotY = Mat(3, 3, CV_64F);
-	rotY.row(0).col(0) = cos(y_r);
-	rotY.row(1).col(0) = 0;
-	rotY.row(2).col(0) = sin(y_r);
-	rotY.row(0).col(1) = 0;
-	rotY.row(1).col(1) = 1;
-	rotY.row(2).col(1) = 0;
-	rotY.row(0).col(2) = -sin(y_r);
-	rotY.row(1).col(2) = 0;
-	rotY.row(2).col(2) = cos(y_r);
-	cout<<rotY<<endl;
+	Mat rvec = Mat(3, 1, CV_64F);
+	rvec.row(0).col(0)  = x_r;
+	rvec.row(1).col(0)  = y_r;
+	rvec.row(2).col(0)  = z_r;
 
-	Mat rotZ = Mat(3, 3, CV_64F);
-	rotZ.row(0).col(0) = cos(z_r);
-	rotZ.row(1).col(0) = sin(z_r);
-	rotZ.row(2).col(0) = 0;
-	rotZ.row(0).col(1) = -sin(z_r);
-	rotZ.row(1).col(1) = cos(z_r);
-	rotZ.row(2).col(1) = 0;
-	rotZ.row(0).col(2) = 0;
-	rotZ.row(1).col(2) = 0;
-	rotZ.row(2).col(2) = 1;
-	cout<<rotZ<<endl;
-
-	// Final rotation matrix
-	//Mat f = rotZ* rotY * rotX;
-	//Mat f = rotZ* rotX * rotY;
-	//Mat f = rotY* rotZ * rotX;
-	//Mat f = rotY* rotX * rotZ;
-	Mat f = rotX* rotY * rotZ;
-	//Mat f = rotX* rotZ * rotY;
-
+	Mat rmat = Mat();
+	Rodrigues(rvec, rmat);
+	Matx33f rotation_matrix = rmat;
 
 	// Construct the final extrensic parameter matrix
 	Mat eParam = Mat(4,4, CV_64F);
 
-	eParam.row(0).col(0) =  f.at<double>(0,0);
-	eParam.row(0).col(1) =  f.at<double>(0,1); 
-	eParam.row(0).col(2) =  f.at<double>(0,2);
+	eParam.row(0).col(0) =  rmat.at<double>(0,0);
+	eParam.row(0).col(1) =  rmat.at<double>(0,1); 
+	eParam.row(0).col(2) =  rmat.at<double>(0,2);
 	eParam.row(0).col(3) =  x_t;
-	eParam.row(1).col(0) =  f.at<double>(1,0);
-	eParam.row(1).col(1) =  f.at<double>(1,1);
-	eParam.row(1).col(2) =  f.at<double>(1,2);
+	eParam.row(1).col(0) =  rmat.at<double>(1,0);
+	eParam.row(1).col(1) =  rmat.at<double>(1,1);
+	eParam.row(1).col(2) =  rmat.at<double>(1,2);
 	eParam.row(1).col(3) =  y_t;
-	eParam.row(2).col(0) =  f.at<double>(2,0);
-	eParam.row(2).col(1) =  f.at<double>(2,1);
-	eParam.row(2).col(2) =  f.at<double>(2,2);
+	eParam.row(2).col(0) =  rmat.at<double>(2,0);
+	eParam.row(2).col(1) =  rmat.at<double>(2,1);
+	eParam.row(2).col(2) =  rmat.at<double>(2,2);
 	eParam.row(2).col(3) =  z_t;
 	eParam.row(3).col(0) =  0;
 	eParam.row(3).col(1) =  0;
@@ -728,7 +691,7 @@ Point worldToImage(Mat intr, Mat extr, Mat coordW)
 	return vector2Point(coordI2);
 }
 
-bool calibration = true;
+bool calibration = false;
 
 int main(int argc, char* argv[])
 {
@@ -738,25 +701,27 @@ int main(int argc, char* argv[])
 		cout<< "Performing camera calibration";
 		startCalibration();
 	}
+	
 
 	Mat cameraMatrix = retrieve_camera_data("Camera_Matrix");
 	cout<<cameraMatrix;
 	Mat extrinsicComplete = retrieve_camera_data("Extrinsic_Parameters");
-	Mat eParam = construct_extrinsic(extrinsicComplete, 0);
+	Mat eParam = construct_extrinsic(extrinsicComplete, 4);
 	
 	Point originW = worldToImage(cameraMatrix, eParam, createVector(0,0,0));
 	Point xW = worldToImage(cameraMatrix, eParam, createVector(100,0,0));
 	Point yW = worldToImage(cameraMatrix, eParam, createVector(0,100,0));
-	Point zW = worldToImage(cameraMatrix, eParam, createVector(0,0,100));
+	Point zW = worldToImage(cameraMatrix, eParam, createVector(0,0,-100));
 
 	Mat image;
-	image = imread("Images\\board1.jpg", CV_LOAD_IMAGE_COLOR);
+	image = imread("Images\\board5.jpg", CV_LOAD_IMAGE_COLOR);
 	// Row chosen should depend on the image chosen
 	line(image, originW, xW, Scalar(0, 0, 255), 3);
 	line(image, originW, yW, Scalar(0, 0, 255), 3);
 	line(image, originW, zW, Scalar(0, 0, 255), 3);
 	
 	imshow("Assignment1", image);
+	imwrite("\Images\\board5_calibr.jpg", image);
 	waitKey(0);
 
 	// Wait for user input
