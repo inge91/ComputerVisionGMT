@@ -67,7 +67,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="assignment_1.cpp" />
     <ClCompile Include="camera_calibration.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="camera_calibration.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
