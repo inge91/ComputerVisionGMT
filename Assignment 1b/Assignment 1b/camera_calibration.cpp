@@ -563,11 +563,11 @@ bool runCalibrationAndSave(Settings& s, Size imageSize, Mat&  cameraMatrix, Mat&
 
 
 // Retrieves matrix data from the xml file
-Mat retrieve_camera_data(String data_unit)
+Mat retrieve_data(String filename, String data_unit)
 {
 
 	FileStorage fs;
-	fs.open("out_camera_data.xml", FileStorage::READ);
+	fs.open(filename, FileStorage::READ);
 
 	if(!fs.isOpened())
 	{
@@ -693,36 +693,86 @@ Point worldToImage(Mat intr, Mat extr, Mat coordW)
 
 bool calibration = false;
 
+
+// Visualise the world axis on the image
+Mat visualiseAxis(Mat cameraMatrix, Mat extrinsicParams, Mat image)
+{
+	Point originW = worldToImage(cameraMatrix, extrinsicParams, createVector(0,0,0));
+	Point xW = worldToImage(cameraMatrix, extrinsicParams, createVector(200,0,0));
+	Point yW = worldToImage(cameraMatrix, extrinsicParams, createVector(0,200,0));
+	Point zW = worldToImage(cameraMatrix, extrinsicParams, createVector(0,0,-200));
+
+	line(image, originW, xW, Scalar(0, 0, 255), 3);
+	line(image, originW, yW, Scalar(0, 255, 0), 3);
+	line(image, originW, zW, Scalar(255, 0, 0), 3);
+
+	return image;
+}
+
+// Draws the unit cube in an image
+Mat drawUnitCube(Mat cameraMatrix, Mat extrinsicParams, Mat image)
+{
+
+	Point p1 = worldToImage(cameraMatrix, extrinsicParams, createVector(0,0,0));
+	Point p2 = worldToImage(cameraMatrix, extrinsicParams, createVector(100,0,0));
+	Point p3 = worldToImage(cameraMatrix, extrinsicParams, createVector(0,100,0));
+	Point p4 = worldToImage(cameraMatrix, extrinsicParams, createVector(100, 100,0));
+
+	Point p5 = worldToImage(cameraMatrix, extrinsicParams, createVector(0,0,-100));
+	Point p6 = worldToImage(cameraMatrix, extrinsicParams, createVector(100,0,-100));
+	Point p7 = worldToImage(cameraMatrix, extrinsicParams, createVector(0,100,-100));
+	Point p8 = worldToImage(cameraMatrix, extrinsicParams, createVector(100, 100,-100));
+
+	line(image, p1, p2, Scalar(255, 255, 255), 2);
+	line(image, p1, p3, Scalar(255, 255, 255), 2);
+	line(image, p2, p4, Scalar(255, 255, 255), 2);
+	line(image, p3, p4, Scalar(255, 255, 255), 2);
+
+	line(image, p5, p6, Scalar(255, 255, 255), 2);
+	line(image, p5, p7, Scalar(255, 255, 255), 2);
+	line(image, p6, p8, Scalar(255, 255, 255), 2);
+	line(image, p7, p8, Scalar(255, 255, 255), 2);
+
+	line(image, p1, p5, Scalar(255, 255, 255), 2);
+	line(image, p2, p6, Scalar(255, 255, 255), 2);
+	line(image, p3, p7, Scalar(255, 255, 255), 2);
+	line(image, p4, p8, Scalar(255, 255, 255), 2);
+
+	return image;
+}
+
+
 int main(int argc, char* argv[])
 {
 	if(calibration)
 	{
-
 		cout<< "Performing camera calibration";
 		startCalibration();
 	}
 	
+	String cameraData = "out_camera_data.xml";
+	String calibrationData = "test.xml";
 
-	Mat cameraMatrix = retrieve_camera_data("Camera_Matrix");
-	cout<<cameraMatrix;
-	Mat extrinsicComplete = retrieve_camera_data("Extrinsic_Parameters");
-	Mat eParam = construct_extrinsic(extrinsicComplete, 4);
-	
-	Point originW = worldToImage(cameraMatrix, eParam, createVector(0,0,0));
-	Point xW = worldToImage(cameraMatrix, eParam, createVector(100,0,0));
-	Point yW = worldToImage(cameraMatrix, eParam, createVector(0,100,0));
-	Point zW = worldToImage(cameraMatrix, eParam, createVector(0,0,-100));
+	// Retieve important data from the xml files used by the calibration
+	Mat cameraMatrix = retrieve_data(cameraData, "Camera_Matrix");
+	Mat extrinsicComplete = retrieve_data(cameraData, "Extrinsic_Parameters");
 
 	Mat image;
-	image = imread("Images\\board5.jpg", CV_LOAD_IMAGE_COLOR);
-	// Row chosen should depend on the image chosen
-	line(image, originW, xW, Scalar(0, 0, 255), 3);
-	line(image, originW, yW, Scalar(0, 0, 255), 3);
-	line(image, originW, zW, Scalar(0, 0, 255), 3);
 	
-	imshow("Assignment1", image);
-	imwrite("\Images\\board5_calibr.jpg", image);
-	waitKey(0);
+	for(int i = 1; i < 6; i++)
+	{
+
+		Mat eParam = construct_extrinsic(extrinsicComplete, i-1);
+	
+	
+		image = imread("Images\\board"+ to_string(i) + ".jpg", CV_LOAD_IMAGE_COLOR);
+		image = visualiseAxis(cameraMatrix, eParam, image);
+		image = drawUnitCube(cameraMatrix, eParam, image);
+
+		imshow("Assignment1", image);
+		imwrite("\Images\\board"+ to_string(i) + "_calibr.jpg", image);
+		waitKey(0);
+	}
 
 	// Wait for user input
 	
