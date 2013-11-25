@@ -60,9 +60,10 @@ Mat construct_extrinsic(Mat data, int i)
 	rvec.row(2).col(0)  = z_r;
 
 	Mat rmat = Mat();
+	// Create rotation matrix from rotation vector
 	Rodrigues(rvec, rmat);
-	Matx33f rotation_matrix = rmat;
 
+	std::cout<<rmat;
 	// Construct the final extrensic parameter matrix
 	Mat eParam = Mat(4,4, CV_64F);
 
@@ -82,7 +83,9 @@ Mat construct_extrinsic(Mat data, int i)
 	eParam.row(3).col(1) =  0;
 	eParam.row(3).col(2) =  0;
 	eParam.row(3).col(3) =  1;
-
+	std::cout<<eParam;
+	//Mat eParam = Mat::eye(4, 4, CV_64F);
+	//eParam = eParam * rmat;
 	return eParam;
 
 }
@@ -214,6 +217,7 @@ int main(int argc, char* argv[])
 
 	Mat image;
 	
+	// Draw in all the images and save these new images
 	for(int i = 1; i < 6; i++)
 	{
 
