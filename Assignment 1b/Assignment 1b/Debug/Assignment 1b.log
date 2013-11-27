@@ -1,17 +1,17 @@
-﻿Build started 25-11-2013 15:23:04.
-     1>Project "C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 1b\Assignment 1b\Assignment 1b.vcxproj" on node 2 (Build target(s)).
+﻿Build started 27-11-2013 16:48:04.
+     1>Project "C:\Users\Meri\ComputerVisionGMT\Assignment 1b\Assignment 1b\Assignment 1b.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /IC:\opencv246\build\x86\vc11\..\..\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt assignment_1.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /IC:\opencv\build\x86\vc11\..\..\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt assignment_1.cpp
          assignment_1.cpp
-     1>c:\users\inge\documents\visual studio 2012\projects\computer vision\assignment 1b\assignment 1b\assignment_1.cpp(119): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
-     1>c:\users\inge\documents\visual studio 2012\projects\computer vision\assignment 1b\assignment 1b\assignment_1.cpp(120): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
-     1>c:\users\inge\documents\visual studio 2012\projects\computer vision\assignment 1b\assignment 1b\assignment_1.cpp(232): warning C4129: 'I' : unrecognized character escape sequence
+     1>c:\users\meri\computervisiongmt\assignment 1b\assignment 1b\assignment_1.cpp(119): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+     1>c:\users\meri\computervisiongmt\assignment 1b\assignment 1b\assignment_1.cpp(120): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+     1>c:\users\meri\computervisiongmt\assignment 1b\assignment 1b\assignment_1.cpp(235): warning C4129: 'I' : unrecognized character escape sequence
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 1b\Debug\Assignment 1b.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\opencv246\build\x86\vc11\lib opencv_core246d.lib opencv_imgproc246d.lib opencv_highgui246d.lib opencv_ml246d.lib opencv_video246d.lib opencv_features2d246d.lib opencv_calib3d246d.lib opencv_objdetect246d.lib opencv_contrib246d.lib opencv_legacy246d.lib opencv_flann246d.lib gltools.lib freeglut_static.lib glut32.lib glu32.lib opengl32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 1b\Debug\Assignment 1b.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 1b\Debug\Assignment 1b.lib" /MACHINE:X86 Debug\assignment_1.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Meri\ComputerVisionGMT\Assignment 1b\Debug\Assignment 1b.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\opencv\build\x86\vc11\lib opencv_core246d.lib opencv_imgproc246d.lib opencv_highgui246d.lib opencv_ml246d.lib opencv_video246d.lib opencv_features2d246d.lib opencv_calib3d246d.lib opencv_objdetect246d.lib opencv_contrib246d.lib opencv_legacy246d.lib opencv_flann246d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Meri\ComputerVisionGMT\Assignment 1b\Debug\Assignment 1b.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Meri\ComputerVisionGMT\Assignment 1b\Debug\Assignment 1b.lib" /MACHINE:X86 Debug\assignment_1.obj
          Debug\camera_calibration.obj
-         Assignment 1b.vcxproj -> C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 1b\Debug\Assignment 1b.exe
-     1>Done Building Project "C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 1b\Assignment 1b\Assignment 1b.vcxproj" (Build target(s)).
+         Assignment 1b.vcxproj -> C:\Users\Meri\ComputerVisionGMT\Assignment 1b\Debug\Assignment 1b.exe
+     1>Done Building Project "C:\Users\Meri\ComputerVisionGMT\Assignment 1b\Assignment 1b\Assignment 1b.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:02.91
+Time Elapsed 00:00:02.01

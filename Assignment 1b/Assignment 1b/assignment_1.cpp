@@ -124,6 +124,9 @@ Point vector2Point(Mat twodVec)
 // transfoms world coordinates to image coordinate
 Point worldToImage(Mat intr, Mat extr, Mat coordW)
 {
+	// Invert z-axis for an intuitive upward axis
+	coordW.row(2) = 0 - coordW.row(2);
+
 	if(!(coordW.rows == 4 && coordW.cols == 1))
 	{
 		cout<<"Vector is not of the right size";
@@ -156,7 +159,7 @@ Mat visualiseAxis(Mat cameraMatrix, Mat extrinsicParams, Mat image)
 	Point originW = worldToImage(cameraMatrix, extrinsicParams, createVector(0,0,0));
 	Point xW = worldToImage(cameraMatrix, extrinsicParams, createVector(200,0,0));
 	Point yW = worldToImage(cameraMatrix, extrinsicParams, createVector(0,200,0));
-	Point zW = worldToImage(cameraMatrix, extrinsicParams, createVector(0,0,-200));
+	Point zW = worldToImage(cameraMatrix, extrinsicParams, createVector(0,0,200));
 
 	line(image, originW, xW, Scalar(0, 0, 255), 3);
 	line(image, originW, yW, Scalar(0, 255, 0), 3);
@@ -174,10 +177,10 @@ Mat drawUnitCube(Mat cameraMatrix, Mat extrinsicParams, Mat image)
 	Point p3 = worldToImage(cameraMatrix, extrinsicParams, createVector(0,100,0));
 	Point p4 = worldToImage(cameraMatrix, extrinsicParams, createVector(100, 100,0));
 
-	Point p5 = worldToImage(cameraMatrix, extrinsicParams, createVector(0,0,-100));
-	Point p6 = worldToImage(cameraMatrix, extrinsicParams, createVector(100,0,-100));
-	Point p7 = worldToImage(cameraMatrix, extrinsicParams, createVector(0,100,-100));
-	Point p8 = worldToImage(cameraMatrix, extrinsicParams, createVector(100, 100,-100));
+	Point p5 = worldToImage(cameraMatrix, extrinsicParams, createVector(0,0,100));
+	Point p6 = worldToImage(cameraMatrix, extrinsicParams, createVector(100,0,100));
+	Point p7 = worldToImage(cameraMatrix, extrinsicParams, createVector(0,100,100));
+	Point p8 = worldToImage(cameraMatrix, extrinsicParams, createVector(100, 100,100));
 
 	line(image, p1, p2, Scalar(255, 255, 255), 2);
 	line(image, p1, p3, Scalar(255, 255, 255), 2);
