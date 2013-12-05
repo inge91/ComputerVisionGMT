@@ -26,6 +26,11 @@ VoxelReconstruction::VoxelReconstruction(const string &dp, const int cva) :
 	{
 		stringstream full_path;
 		full_path << cam_path << (v + 1) << PATH_SEP;
+
+		cout<< full_path.str() + General::ConfigFile<<endl;
+		cout<< full_path.str() + General::IntrinsicsFile<<endl;
+		cout<< full_path.str() + General::CheckerboadVideo<<endl;
+
 		assert(
 				(General::fexists(full_path.str() + General::BackgroundImageFile) || General::fexists(
 							full_path.str() + General::BackgroundVideoFile))

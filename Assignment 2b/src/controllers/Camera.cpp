@@ -217,6 +217,7 @@ bool Camera::detExtrinsics(const string &data_path, const string &checker_vid_fn
 		return false;
 	}
 
+	std::cout<<data_path + checker_vid_fname ;
 	VideoCapture cap(data_path + checker_vid_fname);
 	if (!cap.isOpened())
 	{
