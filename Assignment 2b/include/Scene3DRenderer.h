@@ -19,7 +19,7 @@
 #include "General.h"
 #include "Reconstructor.h"
 #include "Camera.h"
-
+#include "FindingValues.h"
 namespace nl_uu_science_gmt
 {
 
@@ -67,6 +67,8 @@ class Scene3DRenderer
 	int _v_threshold;
 	int _pv_threshold;
 
+	int _noise_nr;
+	int _silhouette_nr;
 	// edge points of the virtual ground floor grid
 	std::vector<std::vector<cv::Point3i*> > _floor_grid;
 

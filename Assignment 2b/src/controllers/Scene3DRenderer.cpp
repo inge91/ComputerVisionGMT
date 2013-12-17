@@ -13,6 +13,7 @@ using namespace cv;
 namespace nl_uu_science_gmt
 {
 
+
 /**
  * Scene properties class (mostly called by Glut)
  */
@@ -51,9 +52,24 @@ Scene3DRenderer::Scene3DRenderer(Reconstructor &r, const vector<Camera*> &cs) :
 	_current_frame = 0;
 	_previous_frame = -1;
 
-	const int H = 0;
-	const int S = 15;
-	const int V = 25;
+	// Optimal HSV values as determined by use.
+	int hsv[3] = {150,58,49};
+
+	// IF YOU WANT TO USE GROUND TRUTH METHOD UNCOMMENT THIS LINE BELOW
+	//	calculateHSV(hsv);
+
+	const int H = hsv[0];
+	const int S = hsv[1];
+	const int V = hsv[2];
+	
+	int improve[2] = {0,0};
+
+	// This determines how often we should apply erosion and dilation
+	calculateImprovement(H, S, V, improve);
+	
+	_noise_nr = improve[0];
+	_silhouette_nr = improve[1];
+
 	_h_threshold = H;
 	_ph_threshold = H;
 	_s_threshold = S;
@@ -65,6 +81,9 @@ Scene3DRenderer::Scene3DRenderer(Reconstructor &r, const vector<Camera*> &cs) :
 	createTrackbar("H", VIDEO_WINDOW, &_h_threshold, 255);
 	createTrackbar("S", VIDEO_WINDOW, &_s_threshold, 255);
 	createTrackbar("V", VIDEO_WINDOW, &_v_threshold, 255);
+	// Trackbar for easy adjustment
+	createTrackbar("Noise filter", VIDEO_WINDOW, &_noise_nr, 255);
+	createTrackbar("Silhouette filter", VIDEO_WINDOW, &_silhouette_nr, 255);
 
 	createFloorGrid();
 	setTopView();
@@ -115,6 +134,7 @@ void Scene3DRenderer::processForeground(Camera* camera)
 	// Background subtraction H
 	Mat tmp, foreground, background;
 	absdiff(channels[0], camera->getBgHsvChannels().at(0), tmp);
+
 	threshold(tmp, foreground, _h_threshold, 255, CV_THRESH_BINARY);
 
 	// Background subtraction S
@@ -124,12 +144,33 @@ void Scene3DRenderer::processForeground(Camera* camera)
 
 	// Background subtraction V
 	absdiff(channels[2], camera->getBgHsvChannels().at(2), tmp);
+
 	threshold(tmp, background, _v_threshold, 255, CV_THRESH_BINARY);
+
 	bitwise_or(foreground, background, foreground);
 
 	// Remove noise
 #ifndef USE_GRAPHCUTS
-	// Using Erosion and/or Dilation of the foreground image
+	
+		for(int i = 0; i < _noise_nr; i++)
+		{
+			erode(foreground, foreground, Mat());
+		}
+
+		for(int i = 0; i < _noise_nr; i++)
+		{
+			dilate(foreground, foreground, Mat());
+		}
+		// dilation and erosion for filling of the silhouette
+		for(int i = 0; i < _silhouette_nr; i ++)
+		{
+			dilate(foreground, foreground, Mat());
+		}
+		for(int j = 0; j < _silhouette_nr; j ++)
+		{
+			erode(foreground, foreground, Mat());
+
+		}	
 #else
 	// Using Graph cuts on the foreground image
 #endif
@@ -156,6 +197,7 @@ void Scene3DRenderer::setCamera(int camera)
 		_arcball_up.z = 1.0f;
 	}
 }
+
 
 /**
  * Set the 3D scene to bird's eye view

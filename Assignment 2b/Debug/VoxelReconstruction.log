@@ -1,9 +1,28 @@
-﻿Build started 6-12-2013 17:51:42.
+﻿Build started 13-12-2013 18:16:23.
      1>Project "C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 2b\VoxelReconstruction.vcxproj" on node 2 (Build target(s)).
-     1>Link:
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /Iinclude /IC:\opencv246\build\x86\vc11\include /IC:\opencv246\build\x86\vc11\..\..\include /Zi /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt src\VoxelReconstruction.cpp src\controllers\FindingValues.cpp src\controllers\Glut.cpp src\controllers\Scene3DRenderer.cpp
+         Scene3DRenderer.cpp
+         FindingValues.cpp
+     1>src\controllers\FindingValues.cpp(4): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+         Generating Code...
+         Compiling...
+         VoxelReconstruction.cpp
+         Generating Code...
+         Skipping... (no relevant changes detected)
+         Glut.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 2b\Debug\VoxelReconstruction.exe" /INCREMENTAL /NOLOGO /LIBPATH:lib /LIBPATH:C:\opencv246\build\x86\vc11\x86\vc11\lib /LIBPATH:C:\opencv246\build\x86\vc11\lib opencv_core246d.lib opencv_highgui246d.lib opencv_imgproc246d.lib opencv_calib3d246d.lib OpenGL32.lib Glu32.lib opencv_core246d.lib opencv_imgproc246d.lib opencv_highgui246d.lib opencv_ml246d.lib opencv_video246d.lib opencv_features2d246d.lib opencv_calib3d246d.lib opencv_objdetect246d.lib opencv_contrib246d.lib opencv_legacy246d.lib opencv_flann246d.lib gltools.lib freeglut_static.lib glut32.lib glu32.lib opengl32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 2b\Debug\VoxelReconstruction.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 2b\Debug\VoxelReconstruction.lib" /MACHINE:X86 Debug\arcball.obj
+         Debug\Camera.obj
+         Debug\FindingValues.obj
+         Debug\Glut.obj
+         Debug\Reconstructor.obj
+         Debug\Scene3DRenderer.obj
+         Debug\General.obj
+         Debug\VoxelReconstruction.obj
          VoxelReconstruction.vcxproj -> C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 2b\Debug\VoxelReconstruction.exe
      1>Done Building Project "C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 2b\VoxelReconstruction.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.08
+Time Elapsed 00:00:29.60

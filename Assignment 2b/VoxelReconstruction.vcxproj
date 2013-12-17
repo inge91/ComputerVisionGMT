@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClCompile Include="src\controllers\arcball.cpp" />
     <ClCompile Include="src\controllers\Camera.cpp" />
+    <ClCompile Include="src\controllers\FindingValues.cpp" />
     <ClCompile Include="src\controllers\Glut.cpp" />
     <ClCompile Include="src\controllers\Reconstructor.cpp" />
     <ClCompile Include="src\controllers\Scene3DRenderer.cpp" />
@@ -153,6 +154,7 @@
   <ItemGroup>
     <ClInclude Include="include\arcball.h" />
     <ClInclude Include="include\Camera.h" />
+    <ClInclude Include="include\FindingValues.h" />
     <ClInclude Include="include\General.h" />
     <ClInclude Include="include\Glut.h" />
     <ClInclude Include="include\Reconstructor.h" />
