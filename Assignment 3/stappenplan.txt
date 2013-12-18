@@ -1,0 +1,11 @@
+Stap 1: Kmeans with random start for 4 clusters of person.
+Step 2:Check if local minimum, if so restart (by using distances between centers?)
+
+Step 3: For each cluster for each view create color model and take mean. Histogram
+Step 4: Begin loop
+	Step 1: For each voxel, check the color for each pixel that belongs to it (for every camera). 
+	Step 2: Compare each pixel value to color models, and cast vote over which person is shown.
+	Step 3: In case draw choose random (or look at previous frame)
+	Step 4: Create new centres using the new voxel labeling
+	Step 5: Use kmeans to determine new labeling using the clusters
+	
