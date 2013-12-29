@@ -6,6 +6,7 @@
  */
 
 #include "Reconstructor.h"
+#include "FindingValues.h"
 
 using namespace std;
 using namespace cv;
@@ -123,8 +124,8 @@ void Reconstructor::initialize()
 			}
 		}
 	}
-
-	cout << "done!" << endl;
+	
+	cout << "done!" << endl;	
 }
 
 /**
@@ -134,6 +135,7 @@ void Reconstructor::initialize()
  *
  * Optimized by inverting the process (iterate over voxels instead of camera pixels for each camera)
  */
+int i = 0;
 void Reconstructor::update()
 {
 	_visible_voxels.clear();
@@ -166,6 +168,21 @@ void Reconstructor::update()
 			_visible_voxels.push_back(voxel);
 		}
 	}
+	if (i == 0)
+	{
+
+		kMeans(_visible_voxels, 4,  _centroids, _clusters);
+		//Check the centroid distances to eachother
+		while(!check_centroids(_centroids))
+		{
+
+			cout<<endl;
+			kMeans(_visible_voxels, 4,  _centroids, _clusters);
+		}
+		cout<<" size of first cluster: " << _clusters[0].size()<<endl;
+		i +=1;
+	}
 }
+
 
 } /* namespace nl_uu_science_gmt */

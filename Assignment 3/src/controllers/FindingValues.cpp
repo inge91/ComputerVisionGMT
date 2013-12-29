@@ -3,6 +3,9 @@
 
 #include "FindingValues.h";
 
+using namespace nl_uu_science_gmt;
+void kMeans(std::vector<Reconstructor::Voxel*> v, int nr_centroids, vector<Reconstructor::Voxel*>&centroid);
+
 	// sums the difference between two images
 	// Every pixel that is different adds a value of
 	// 1 to the total sum. The final value returned
@@ -171,4 +174,141 @@ Mat process( int h, int s, int v, int noise_remove, int silhouette_fill)
 
 	imwrite("data\\cam1\\first_frame_threshed.png", foreground);
 	return foreground;
+}
+
+
+// Calculate euclidian distance between two voxels
+double calculate_distance(Reconstructor::Voxel* v, Reconstructor::Voxel* v2)
+{
+	double dx = v->x - v2->x;
+	double dy = v->y - v2->y;
+	double dz = v->z - v2->z;
+	return 	sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+
+Reconstructor::Voxel* calculate_centroids(std::vector<Reconstructor::Voxel*> v)
+{
+	double x = 0;
+	double y = 0; 
+	double z = 0;
+	for(int i = 0 ; i < v.size(); i ++ )
+	{
+		x += v[i]->x;
+		y += v[i]->y;
+		z += v[i]->z;
+
+	}
+	Reconstructor::Voxel* centroid = new Reconstructor::Voxel;
+	centroid->x = x / v.size();
+	centroid->y = y / v.size();
+	centroid->z = z / v.size();
+	
+	return centroid;
+}
+
+bool centroid_change(vector<Reconstructor::Voxel*> prev_centroids, vector<Reconstructor::Voxel*> centroids)
+{
+	if(prev_centroids[0] == NULL)
+	{
+		return true;
+	}
+	for(int i = 0; i < prev_centroids.size(); i++)
+	{
+		if(prev_centroids[i]->x != centroids[i]->x ||
+			prev_centroids[i]->y != centroids[i]->y ||
+			prev_centroids[i]->z != centroids[i]->z)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+// v voxels to be clustered
+// nr_centroids are number of clusters
+// centroids consists the voxels which make up the center of the clusters
+void kMeans(vector<Reconstructor::Voxel*> v, const int nr_centroids, vector<Reconstructor::Voxel*> &centroids, vector<Reconstructor::Voxel*> f[])
+{
+	int max = v.size() - 1;
+	
+	vector<Reconstructor::Voxel*> prev_centroids;
+	
+	// Clear all previous data 
+	centroids.clear();
+	for(int i = 0 ; i < nr_centroids; i++)
+	{
+		f[i].clear();
+	}
+
+	//vector<Reconstructor::Voxel*> f[4];
+	// Choose beginning values for each centorid using
+	for(int i = 0; i < nr_centroids; i ++)
+	{
+		prev_centroids.push_back(NULL);
+		centroids.push_back(v[rand() % max]);
+	}
+	
+	while(centroid_change(prev_centroids, centroids))
+	{
+		for(int i = 0; i < nr_centroids; i++)
+		{
+			// empty all clusters
+			f[i].clear();
+		}
+		for(int i = 0; i < v.size(); i++)
+		{
+			int cluster = 9;
+			double min = 999999;
+			// calculate the distance to each centroid.
+			for(int j = 0; j < nr_centroids; j++)
+			{
+				double distance = calculate_distance(v[i], centroids[j]);
+				if (distance < min)
+				{
+					min = distance;
+					cluster = j;
+				}
+			}
+			// Add the voxel to the right cluster
+			f[cluster].push_back(v[i]);
+		}
+		
+		// Calculate new cluster center
+		for(int i = 0; i < nr_centroids; i++)
+		{
+			Reconstructor::Voxel* v = calculate_centroids(f[i]);
+			prev_centroids[i] = centroids[i];
+			centroids[i] = v;
+		}
+		
+		
+	}
+}
+
+bool wayToSort(Reconstructor::Voxel* i, Reconstructor::Voxel* j)
+{
+	return i->y < j->y; 
+}
+// check if the centroids are far enough away from each other
+bool check_centroids(vector<Reconstructor::Voxel*> centroid)
+{
+	// minimal distance between voxels
+	//maximal distance between voxels
+	double dymin = 5; 
+	double dymax = 10; 
+	sort(centroid.begin(), centroid.end(), wayToSort);
+
+	for(int k = 0; k < centroid.size(); k++)
+	{
+		cout<<"centroid "<< k << ": " << centroid[k]->x << " "<< centroid[k]->y << " "<<centroid[k]->z<<endl;
+	}
+	if((centroid[0]->y < 0 && centroid[1]->y <0))
+	{
+		cout<<"Return true"<<endl;
+		return true;
+	}
+	return false;
+
 }

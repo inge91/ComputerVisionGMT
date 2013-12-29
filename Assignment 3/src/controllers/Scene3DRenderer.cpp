@@ -62,10 +62,9 @@ Scene3DRenderer::Scene3DRenderer(Reconstructor &r, const vector<Camera*> &cs) :
 	const int S = hsv[1];
 	const int V = hsv[2];
 	
-	int improve[2] = {0,0};
-
+	int improve[2] = {1,13};
 	// This determines how often we should apply erosion and dilation
-	calculateImprovement(H, S, V, improve);
+	//calculateImprovement(H, S, V, improve);
 	
 	_noise_nr = improve[0];
 	_silhouette_nr = improve[1];

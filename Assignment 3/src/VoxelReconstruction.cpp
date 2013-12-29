@@ -105,6 +105,7 @@ void VoxelReconstruction::run(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
+
 	VoxelReconstruction::showKeys();
 	VoxelReconstruction vr("data" + string(PATH_SEP), 4);
 	vr.run(argc, argv);

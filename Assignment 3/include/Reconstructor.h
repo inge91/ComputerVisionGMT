@@ -41,7 +41,9 @@ private:
 
 	std::vector<Voxel*> _voxels;
 	std::vector<Voxel*> _visible_voxels;
-
+	//The centroid vector
+	std::vector<Voxel*> _centroids;
+	std::vector<Voxel*> _clusters[4];
 	void initialize();
 
 public:
@@ -53,6 +55,16 @@ public:
 	const std::vector<Voxel*>& getVisibleVoxels() const
 	{
 		return _visible_voxels;
+	}
+	// Return centroids and cluster vectors and array
+	const std::vector<Voxel*>& getCentroids() const
+	{
+		return _centroids;
+	}
+
+	const std::vector<Voxel*>* getClusters() const
+	{
+		return _clusters;
 	}
 
 	const std::vector<Voxel*>& getVoxels() const

@@ -813,12 +813,60 @@ void Glut::drawVoxels()
 	glPointSize(2.0f);
 	glBegin(GL_POINTS);
 
-	vector<Reconstructor::Voxel*> voxels = _glut->getScene3d().getReconstructor().getVisibleVoxels();
-	for (size_t v = 0; v < voxels.size(); v++)
+	
+	/*
+	vector<Reconstructor::Voxel*> voxel = _glut->getScene3d().getReconstructor().getVisibleVoxels();
+	for (size_t v = 0; v < voxel.size(); v++)
 	{
 		glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
-		glVertex3f((GLfloat) voxels[v]->x, (GLfloat) voxels[v]->y, (GLfloat) voxels[v]->z);
+		glVertex3f((GLfloat) voxel[v]->x, (GLfloat) voxel[v]->y, (GLfloat) voxel[v]->z);
+	}*/
+
+
+	const vector<Reconstructor::Voxel*> *voxels = _glut->getScene3d().getReconstructor().getClusters();
+	for (size_t v = 0; v < 4; v++)
+	{
+		// Determine the color to draw in
+		switch(v)
+		{
+		case 0:
+			glColor4f(0.5,0,0,0.5);
+			break;
+
+		case 1:
+			glColor4f(0, 0.5, 0, 0.5f);
+
+			break;
+
+		case 2:
+			glColor4f(0, 0, 0.5, 0.5f);
+			break;
+
+		case 3:
+			glColor4f(0, 0.5, 0.5, 0.5f);
+			break;
+		}
+		for(int i = 0; i <	voxels[v].size(); i++)
+		{
+			glVertex3f((GLfloat) voxels[v][i]->x, (GLfloat) voxels[v][i]->y, (GLfloat) voxels[v][i]->z);
+		}
 	}
+
+	glEnd();
+
+
+	glPointSize(2.0f);
+	glBegin(GL_POINTS);
+	// get centroids
+	vector<Reconstructor::Voxel*> centroids = _glut->getScene3d().getReconstructor().getCentroids();
+	
+	//draw centroids
+	for (size_t v = 0; v < centroids.size(); v++)
+	{
+		glColor4f(0.0f, 0.0f, 0.0f, 1);
+		glVertex3f((GLfloat) centroids[v]->x, (GLfloat) centroids[v]->y, (GLfloat) centroids[v]->z);
+	}
+
 
 	glEnd();
 	glPopMatrix();
