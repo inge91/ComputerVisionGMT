@@ -19,7 +19,6 @@ VoxelReconstruction::VoxelReconstruction(const string &dp, const int cva) :
 		_data_path(dp), _cam_views_amount(cva)
 {
 	const string cam_path = _data_path + "cam";
-
 	for (int v = 0; v < _cam_views_amount; ++v)
 	{
 		stringstream full_path;

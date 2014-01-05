@@ -180,8 +180,12 @@ void Reconstructor::update()
 		{
 			kMeans(_visible_voxels, 4,  _centroids, _clusters);
 		}
+		cout<<_clusters[0].size()<<endl; 
+		cout<<_clusters[1].size()<<endl; 
+		cout<<_clusters[2].size()<<endl; 
+		cout<<_clusters[3].size()<<endl; 
 
-		Histogram h1(_clusters[0], _cameras, i);
+	/*	Histogram h1(_clusters[0], _cameras, i);
 		h1.print_histogram();
 		Histogram h2(_clusters[1], _cameras, i);
 		h2.print_histogram();
@@ -189,7 +193,7 @@ void Reconstructor::update()
 		h3.print_histogram();
 		Histogram h4(_clusters[3], _cameras, i);
 		h4.print_histogram();
-		
+		*/
 		i +=1;
 	}
 
