@@ -835,7 +835,6 @@ void Glut::drawVoxels()
 
 		case 1:
 			glColor4f(0, 0.5, 0, 0.5f);
-
 			break;
 
 		case 2:
@@ -853,7 +852,6 @@ void Glut::drawVoxels()
 	}
 
 	glEnd();
-
 
 	glPointSize(2.0f);
 	glBegin(GL_POINTS);

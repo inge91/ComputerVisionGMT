@@ -7,6 +7,7 @@
 
 #include "Reconstructor.h"
 #include "FindingValues.h"
+#include "Histogram.h"
 
 using namespace std;
 using namespace cv;
@@ -168,19 +169,33 @@ void Reconstructor::update()
 			_visible_voxels.push_back(voxel);
 		}
 	}
+
+
+	// The very first clustering step
 	if (i == 0)
 	{
-
 		kMeans(_visible_voxels, 4,  _centroids, _clusters);
 		//Check the centroid distances to eachother
 		while(!check_centroids(_centroids))
 		{
-
-			cout<<endl;
 			kMeans(_visible_voxels, 4,  _centroids, _clusters);
 		}
-		cout<<" size of first cluster: " << _clusters[0].size()<<endl;
+
+		Histogram h1(_clusters[0], _cameras, i);
+		h1.print_histogram();
+		Histogram h2(_clusters[1], _cameras, i);
+		h2.print_histogram();
+		Histogram h3(_clusters[2], _cameras, i);
+		h3.print_histogram();
+		Histogram h4(_clusters[3], _cameras, i);
+		h4.print_histogram();
+		
 		i +=1;
+	}
+
+	// All other steps
+	else
+	{
 	}
 }
 

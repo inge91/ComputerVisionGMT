@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "opencv2/opencv.hpp"
-
 #include "Camera.h"
+
 
 namespace nl_uu_science_gmt
 {

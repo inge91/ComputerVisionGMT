@@ -148,6 +148,7 @@
     <ClCompile Include="src\controllers\Glut.cpp" />
     <ClCompile Include="src\controllers\Reconstructor.cpp" />
     <ClCompile Include="src\controllers\Scene3DRenderer.cpp" />
+    <ClCompile Include="src\Histogram.cpp" />
     <ClCompile Include="src\utilities\General.cpp" />
     <ClCompile Include="src\VoxelReconstruction.cpp" />
   </ItemGroup>
@@ -157,6 +158,7 @@
     <ClInclude Include="include\FindingValues.h" />
     <ClInclude Include="include\General.h" />
     <ClInclude Include="include\Glut.h" />
+    <ClInclude Include="include\Histogram.h" />
     <ClInclude Include="include\Reconstructor.h" />
     <ClInclude Include="include\Scene3DRenderer.h" />
     <ClInclude Include="include\VoxelReconstruction.h" />
