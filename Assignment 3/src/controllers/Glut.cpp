@@ -813,6 +813,7 @@ void Glut::drawVoxels()
 	glPointSize(2.0f);
 	glBegin(GL_POINTS);
 
+	Reconstructor::draw_voxels();
 	
 	/*
 	vector<Reconstructor::Voxel*> voxel = _glut->getScene3d().getReconstructor().getVisibleVoxels();
@@ -820,7 +821,8 @@ void Glut::drawVoxels()
 	{
 		glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
 		glVertex3f((GLfloat) voxel[v]->x, (GLfloat) voxel[v]->y, (GLfloat) voxel[v]->z);
-	}*/
+	}
+
 
 
 	const vector<Reconstructor::Voxel*> *voxels = _glut->getScene3d().getReconstructor().getClusters();
@@ -865,7 +867,7 @@ void Glut::drawVoxels()
 		glVertex3f((GLfloat) centroids[v]->x, (GLfloat) centroids[v]->y, (GLfloat) centroids[v]->z);
 	}
 
-
+	*/
 	glEnd();
 	glPopMatrix();
 }

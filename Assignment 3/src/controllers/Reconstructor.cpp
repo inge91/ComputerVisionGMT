@@ -9,6 +9,17 @@
 #include "FindingValues.h"
 #include "Histogram.h"
 
+
+
+
+// Histogram function
+vector<Histogram> _histograms;
+// returns the histograms
+vector<Histogram>& getHistograms() 
+{
+	return _histograms;
+}
+
 using namespace std;
 using namespace cv;
 
@@ -136,7 +147,7 @@ void Reconstructor::initialize()
  *
  * Optimized by inverting the process (iterate over voxels instead of camera pixels for each camera)
  */
-int i = 0;
+int frame_no  = 0;
 void Reconstructor::update()
 {
 	_visible_voxels.clear();
@@ -172,7 +183,7 @@ void Reconstructor::update()
 
 
 	// The very first clustering step
-	if (i == 0)
+	if (frame_no == 0)
 	{
 		kMeans(_visible_voxels, 4,  _centroids, _clusters);
 		//Check the centroid distances to eachother
@@ -185,21 +196,151 @@ void Reconstructor::update()
 		cout<<_clusters[2].size()<<endl; 
 		cout<<_clusters[3].size()<<endl; 
 
-	/*	Histogram h1(_clusters[0], _cameras, i);
-		h1.print_histogram();
-		Histogram h2(_clusters[1], _cameras, i);
-		h2.print_histogram();
-		Histogram h3(_clusters[2], _cameras, i);
-		h3.print_histogram();
-		Histogram h4(_clusters[3], _cameras, i);
-		h4.print_histogram();
-		*/
-		i +=1;
+		// Fill all histograms givewn current clustering
+		Histogram h1(_clusters[0], _cameras, frame_no);
+		Histogram h2(_clusters[1], _cameras, frame_no);
+		Histogram h3(_clusters[2], _cameras, frame_no);
+		Histogram h4(_clusters[3], _cameras, frame_no);
+
+		// Store in the histogram vector
+		_histograms.push_back(h1);
+		_histograms.push_back(h2);
+		_histograms.push_back(h3);
+		_histograms.push_back(h4);
+		// Go to following frame
+		frame_no +=1;
+		for(int i = 0; i < 4; i ++)
+		{
+			_histograms[i].print_histogram();
+		}
 	}
 
-	// All other steps
+	// All other frame steps we use the histograms to determine where
+	// each voxel belongs to
 	else
 	{
+	
+		// make current frame hsv format for each camera
+		cv::Mat frame_rgb0 = _cameras[0]->getVideoFrame(frame_no);
+		cv::Mat frame_rgb1 = _cameras[1]->getVideoFrame(frame_no);
+		cv::Mat frame_rgb2 = _cameras[2]->getVideoFrame(frame_no);
+		cv::Mat frame_rgb3 = _cameras[3]->getVideoFrame(frame_no);
+		cv::Mat frame_hsv0;
+		cv::Mat frame_hsv1;
+		cv::Mat frame_hsv2;
+		cv::Mat frame_hsv3;
+		cv::cvtColor(frame_rgb0,frame_hsv0, CV_RGB2HSV);
+		cv::cvtColor(frame_rgb1,frame_hsv1, CV_RGB2HSV);
+		cv::cvtColor(frame_rgb2,frame_hsv2, CV_RGB2HSV);
+		cv::cvtColor(frame_rgb3,frame_hsv3, CV_RGB2HSV);
+		std::vector<cv::Mat> hsv;
+		hsv.push_back(frame_hsv0);
+		hsv.push_back(frame_hsv1);
+		hsv.push_back(frame_hsv2);
+		hsv.push_back(frame_hsv3);
+		// remove all voxels added to histograms
+		for (int i = 0; i < _histograms.size(); i++)
+		{
+			_histograms[i].remove_voxels();
+		}
+
+		// We now can label voxels using the color histograms.
+		for(int i = 0; i < _visible_voxels.size(); i ++)
+		{
+			// get colour from voxel 
+			int h = Histogram::get_colour(_visible_voxels[i], _cameras, hsv);
+			
+			double match = 0;
+			int bin = 0;
+			// Calculate the distance to each histogram, then apply to the closest match
+			for(int j = 0; j < _histograms.size(); j++)
+			{
+				double current_match = _histograms[j].calculate_distance(h);
+
+				//cout<<"Distance value for cluster "<< j<< " : "<< current_match<<endl;
+				if(current_match > match)
+				{
+					//cout<<"Distance is highter than before"<<endl;
+					bin = j;
+					match = current_match;
+				}
+				
+			}
+
+			//cout<<"Winner is cluster : "<< bin<<endl;
+			// Add voxel to this histogram
+			_histograms[bin].add_voxel(_visible_voxels[i]);
+		}
+
+		for(int i = 0; i < _histograms.size(); i++)//_histograms.size(); i ++)
+		{
+		
+			// Calculate centroid
+			_histograms[i].calculate_centroid();
+			
+			// remove voxels
+			_histograms[i].remove_voxels();
+		}
+		
+
+
+		// Redistribute voxels over centroids()
+		for(int i = 0; i < _visible_voxels.size(); i ++)
+		{
+			int cluster = 9;
+			double min = 999999;
+			
+			// calculate the distance to each centroid.
+			for(int j = 0; j < _histograms.size(); j++)
+			{
+				double distance = _histograms[j].calculate_centroid_distance(_visible_voxels[i]);
+				if (distance < min)
+				{
+					min = distance;
+					cluster = j;
+				}
+			}
+			// Add the voxel to the right cluster
+			_histograms[cluster].add_voxel(_visible_voxels[i]);	
+		}
+
+		for(int i = 0 ; i < _histograms.size(); i++)
+		{
+			cout<<_histograms[i].voxel_list.size()<<endl;
+		}
+		cout<<"\n"<<endl;
+		// update frame
+		frame_no += 1;
+	}
+}
+// Draws the voxels contained in histograms
+void Reconstructor::draw_voxels()
+{
+	for (size_t v = 0; v < _histograms.size(); v++)
+	{
+		// Determine the color to draw in
+		switch(v)
+		{
+		case 0:
+			glColor4f(0.5,0,0,0.5);
+			break;
+
+		case 1:
+			glColor4f(0, 0.5, 0, 0.5f);
+			break;
+
+		case 2:
+			glColor4f(0, 0, 0.5, 0.5f);
+			break;
+
+		case 3:
+			glColor4f(0, 0.5, 0.5, 0.5f);
+			break;
+		}
+		for(int i = 0; i <	_histograms[v].voxel_list.size(); i++)
+		{
+			glVertex3f((GLfloat) _histograms[v].voxel_list[i]->x, (GLfloat) _histograms[v].voxel_list[i]->y, (GLfloat) _histograms[v].voxel_list[i]->z);
+		}
 	}
 }
 

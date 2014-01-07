@@ -9,9 +9,17 @@
 #define RECONSTRUCTOR_H_
 
 #include <vector>
-
 #include "opencv2/opencv.hpp"
 #include "Camera.h"
+#ifdef _WIN32
+#include <windows.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#endif
+#ifdef __linux__
+#include <GL/glut.h>
+#include <GL/glu.h>
+#endif
 
 
 namespace nl_uu_science_gmt
@@ -44,9 +52,12 @@ private:
 	//The centroid vector
 	std::vector<Voxel*> _centroids;
 	std::vector<Voxel*> _clusters[4];
+
+
 	void initialize();
 
 public:
+	static void draw_voxels();
 	Reconstructor(const std::vector<Camera*> &);
 	virtual ~Reconstructor();
 
@@ -71,6 +82,7 @@ public:
 	{
 		return _voxels;
 	}
+	
 
 	void setVisibleVoxels(const std::vector<Voxel*>& visibleVoxels)
 	{
@@ -97,6 +109,7 @@ public:
 		return _plane_size;
 	}
 };
+
 
 } /* namespace nl_uu_science_gmt */
 

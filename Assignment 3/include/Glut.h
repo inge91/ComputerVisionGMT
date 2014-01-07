@@ -25,6 +25,7 @@
 #include "General.h"
 #include "Scene3DRenderer.h"
 #include "Reconstructor.h"
+#include "Histogram.h"
 
 // i am not sure about the compatibility with this...
 #define MOUSE_WHEEL_UP   3

@@ -197,7 +197,6 @@ void Scene3DRenderer::setCamera(int camera)
 	}
 }
 
-
 /**
  * Set the 3D scene to bird's eye view
  */
