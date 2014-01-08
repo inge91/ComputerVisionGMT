@@ -66,8 +66,11 @@ add_executable (
 	src/controllers/Glut.cpp
 	src/controllers/Reconstructor.cpp
 	src/controllers/Scene3DRenderer.cpp
+	src/controllers/FindingValues.cpp
 	src/utilities/General.cpp
 	src/VoxelReconstruction.cpp
+	src/Histogram.cpp
+	
 )
 
 #############################################
