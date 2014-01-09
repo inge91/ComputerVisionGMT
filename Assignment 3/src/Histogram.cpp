@@ -25,7 +25,7 @@ Histogram::Histogram(vector<Reconstructor::Voxel*> cluster_members, vector<Camer
 	hsv.push_back(frame_hsv3);
 
 	// make array empty
-	for(int i = 0; i < 72; i++)
+	for(int i = 0; i < HISTOGRAM_SIZE; i++)
 	{
 		histogram[i] = 0;
 	}
@@ -35,9 +35,10 @@ Histogram::Histogram(vector<Reconstructor::Voxel*> cluster_members, vector<Camer
 		int h = get_colour(cluster_members[i], c, hsv, camera);
 		if(h >= 0)
 		{
-			histogram[h/5] ++;
+			histogram[h/(360/HISTOGRAM_SIZE)] ++;
 		}
 	}
+
 	// normalize the histogram 
 	normalize();
 
@@ -47,16 +48,13 @@ Histogram::Histogram(vector<Reconstructor::Voxel*> cluster_members, vector<Camer
 void Histogram::normalize()
 {
 	int total = 0;
-	for(int i = 0; i < 72; i++)
+	for(int i = 0; i < HISTOGRAM_SIZE; i++)
 	{
 		total += histogram[i];
-		//cout<< total<<endl;
 	}
 
-		//cout<<"Total"<<endl;
-		//cout<< total<<endl;
 
-	for(int i = 0; i < 72; i++)
+	for(int i = 0; i < HISTOGRAM_SIZE; i++)
 	{
 		//cout<<histogram[i]/total<<endl;
 		histogram[i] = histogram[i] / total;
@@ -112,13 +110,14 @@ double Histogram::calculate_distance(cv::Vec3b f)
 {
 	double total = 0;
 	double hue = f[0];
-	int bin = hue/5;
-	for(int i = 0; i < 72; i++)
+	int bin = hue/(360/HISTOGRAM_SIZE);
+	for(int i = 0; i < HISTOGRAM_SIZE; i++)
 	{
 		total += histogram[i] / (i - bin + 1);
 	}
 	//Increae value a lot so it wont turn out zero
-	return total;
+	//return total;
+	return histogram[bin];
 }
 
 double* Histogram::get_histogram()
@@ -128,7 +127,7 @@ double* Histogram::get_histogram()
 
 void Histogram::print_histogram()
 {
-	for(int i = 0; i < 25; i++)
+	for(int i = 0; i < HISTOGRAM_SIZE; i++)
 	{
 		cout<< histogram[i] << " ";
 	}
@@ -148,30 +147,30 @@ void Histogram::add_voxel(Reconstructor::Voxel* v)
 void Histogram::calculate_centroid()
 {
 	double total_x = 0;
+	double total_y = 0;
 	double total_z = 0;
 	
-	//cout<<"voxel list size " << voxel_list.size()<<endl;
 	for(int i = 0; i < voxel_list.size(); i++)
 	{
 		
-		//cout<< " x y "<< voxel_list[i]->x << " "<< voxel_list[i]->y<<endl;
 		total_x += voxel_list[i]->x;
+		total_y += voxel_list[i]->y;
 		total_z += voxel_list[i]->z;
 		
 	}
 
 	centroid.x = total_x / voxel_list.size();
-	centroid.y = 0;
+	centroid.y = total_y / voxel_list.size();
 	centroid.z = total_z / voxel_list.size();
 		
-//	cout<<"centroid x y z: "<< centroid.x << " "<< centroid.y<< " "<<centroid.z <<endl;
 }
 
 double Histogram::calculate_centroid_distance(Reconstructor::Voxel* v)
 {
 	double dx = v->x - centroid.x;
+	double dy = v->y - centroid.y;
 	double dz = v->z - centroid.z;
-	return 	sqrt(dx * dx + dz * dz);
+	return 	sqrt(dx * dx + dy * dy + dz * dz);
 }
 
 

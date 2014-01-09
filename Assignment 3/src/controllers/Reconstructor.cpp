@@ -10,9 +10,6 @@
 #include "Histogram.h"
 
 
-
-
-
 // Histogram function
 vector<Histogram> _histograms;
 // returns the histograms
@@ -184,8 +181,6 @@ void Reconstructor::update()
 			_visible_voxels.push_back(voxel);
 		}
 	}
-
-
 	// The very first clustering step
 	if (frame_no == 0)
 	{
@@ -262,6 +257,7 @@ void Reconstructor::update()
 		hsv.push_back(frame_hsv1);
 		hsv.push_back(frame_hsv2);
 		hsv.push_back(frame_hsv3);
+
 		// remove all voxels added to histograms
 		for (int i = 0; i < _histograms.size(); i++)
 		{
@@ -271,9 +267,9 @@ void Reconstructor::update()
 		// Reset all closest voxels back to 0
 		for(int i = 0; i < _closest_voxel.size(); i++)
 		{
-			for(int j = 0; j < 640; j ++)
+			for(int j = 0; j < 648; j ++)
 			{
-				for(int k = 0; k < 480; k++)
+				for(int k = 0; k < 488; k++)
 				{
 					_closest_voxel[i][j][k] = NULL;
 				}
@@ -288,7 +284,11 @@ void Reconstructor::update()
 		{
 			// get colour from voxel 
 			int h = Histogram::get_colour(_visible_voxels[i], _cameras, hsv, _closest_voxel);
-			
+			// Skip distance calculation in case there are no projections to camera
+			if(h == -1)
+			{
+				continue;
+			}
 			double match = 0;
 			int bin = 0;
 			// Calculate the distance to each histogram, then apply to the closest match
@@ -296,27 +296,22 @@ void Reconstructor::update()
 			{
 				double current_match = _histograms[j].calculate_distance(h);
 
-				//cout<<"Distance value for cluster "<< j<< " : "<< current_match<<endl;
 				if(current_match > match)
 				{
-					//cout<<"Distance is highter than before"<<endl;
 					bin = j;
 					match = current_match;
 				}
 				
 			}
-
-			//cout<<"Winner is cluster : "<< bin<<endl;
 			// Add voxel to this histogram
 			_histograms[bin].add_voxel(_visible_voxels[i]);
 		}
-
+		
 		for(int i = 0; i < _histograms.size(); i++)//_histograms.size(); i ++)
 		{
 		
 			// Calculate centroid
 			_histograms[i].calculate_centroid();
-			
 			// remove voxels
 			_histograms[i].remove_voxels();
 		}
@@ -340,12 +335,7 @@ void Reconstructor::update()
 			// Add the voxel to the right cluster
 			_histograms[cluster].add_voxel(_visible_voxels[i]);	
 		}
-
-		for(int i = 0 ; i < _histograms.size(); i++)
-		{
-			cout<<_histograms[i].voxel_list.size()<<endl;
-		}
-		cout<<"\n"<<endl;
+		
 		// update frame
 		frame_no += 1;
 	}

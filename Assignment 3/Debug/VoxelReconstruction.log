@@ -1,17 +1,18 @@
-﻿Build started 9-1-2014 15:46:30.
+﻿Build started 9-1-2014 17:31:12.
      1>Project "C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 3\VoxelReconstruction.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /Iinclude /IC:\opencv246\build\x86\vc11\include /IC:\opencv246\build\x86\vc11\..\..\include /Zi /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt src\Histogram.cpp
          Histogram.cpp
      1>src\Histogram.cpp(32): warning C4018: '<' : signed/unsigned mismatch
      1>src\Histogram.cpp(35): warning C4244: 'initializing' : conversion from 'double' to 'int', possible loss of data
-     1>src\Histogram.cpp(52): warning C4244: '+=' : conversion from 'double' to 'int', possible loss of data
-     1>src\Histogram.cpp(93): warning C4018: '<' : signed/unsigned mismatch
-     1>src\Histogram.cpp(115): warning C4244: 'initializing' : conversion from 'double' to 'int', possible loss of data
-     1>src\Histogram.cpp(154): warning C4018: '<' : signed/unsigned mismatch
+     1>src\Histogram.cpp(53): warning C4244: '+=' : conversion from 'double' to 'int', possible loss of data
+     1>src\Histogram.cpp(91): warning C4018: '<' : signed/unsigned mismatch
+     1>src\Histogram.cpp(113): warning C4244: 'initializing' : conversion from 'double' to 'int', possible loss of data
+     1>src\Histogram.cpp(153): warning C4018: '<' : signed/unsigned mismatch
+     1>src\Histogram.cpp(162): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
      1>src\Histogram.cpp(163): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
-     1>src\Histogram.cpp(165): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
-     1>src\Histogram.cpp(193): warning C4018: '<' : signed/unsigned mismatch
+     1>src\Histogram.cpp(164): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+     1>src\Histogram.cpp(192): warning C4018: '<' : signed/unsigned mismatch
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 3\Debug\VoxelReconstruction.exe" /INCREMENTAL /NOLOGO /LIBPATH:lib /LIBPATH:C:\opencv246\build\x86\vc11\x86\vc11\lib /LIBPATH:C:\opencv246\build\x86\vc11\lib opencv_core246d.lib opencv_highgui246d.lib opencv_imgproc246d.lib opencv_calib3d246d.lib OpenGL32.lib Glu32.lib opencv_core246d.lib opencv_imgproc246d.lib opencv_highgui246d.lib opencv_ml246d.lib opencv_video246d.lib opencv_features2d246d.lib opencv_calib3d246d.lib opencv_objdetect246d.lib opencv_contrib246d.lib opencv_legacy246d.lib opencv_flann246d.lib gltools.lib freeglut_static.lib glut32.lib glu32.lib opengl32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 3\Debug\VoxelReconstruction.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 3\Debug\VoxelReconstruction.lib" /MACHINE:X86 Debug\ClusterHistogram.obj
          Debug\arcball.obj
@@ -28,4 +29,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.71
+Time Elapsed 00:00:03.89

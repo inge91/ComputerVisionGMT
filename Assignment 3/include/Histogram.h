@@ -4,11 +4,12 @@
 #include "Reconstructor.h"
 using namespace nl_uu_science_gmt;
 using namespace std;
+#define HISTOGRAM_SIZE 36
 // THis is the class that creates color histograms
 class Histogram
 {
 	// The histogram uses the Hue channel with a range of 10 for each bin
-	double histogram[72];
+	double histogram[HISTOGRAM_SIZE];
 	Reconstructor::Voxel centroid;
 
 
