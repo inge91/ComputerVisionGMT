@@ -17,7 +17,7 @@
 #include <GL/glut.h>
 #include <GL/glu.h>
 #endif
-
+#include <iostream> 
 #include "opencv2/opencv.hpp"
 
 #include "arcball.h"

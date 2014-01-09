@@ -9,6 +9,7 @@
 #define RECONSTRUCTOR_H_
 
 #include <vector>
+#include <iostream> 
 #include "opencv2/opencv.hpp"
 #include "Camera.h"
 #ifdef _WIN32
@@ -62,7 +63,7 @@ public:
 	Reconstructor(const std::vector<Camera*> &);
 	virtual ~Reconstructor();
 
-	void update();
+	void update(int frame_no);
 
 	const std::vector<Voxel*>& getVisibleVoxels() const
 	{

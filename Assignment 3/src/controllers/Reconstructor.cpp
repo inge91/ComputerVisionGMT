@@ -148,8 +148,7 @@ void Reconstructor::initialize()
  *
  * Optimized by inverting the process (iterate over voxels instead of camera pixels for each camera)
  */
-int frame_no  = 0;
-void Reconstructor::update()
+void Reconstructor::update(int frame_no)
 {
 	_visible_voxels.clear();
 
@@ -182,7 +181,7 @@ void Reconstructor::update()
 		}
 	}
 	// The very first clustering step
-	if (frame_no == 0)
+	if (frame_no == 1)
 	{
 		kMeans(_visible_voxels, 4,  _centroids, _clusters);
 		//Check the centroid distances to eachother
@@ -226,8 +225,6 @@ void Reconstructor::update()
 		_histograms.push_back(h2);
 		_histograms.push_back(h3);
 		_histograms.push_back(h4);
-		// Go to following frame
-		frame_no +=1;
 		for(int i = 0; i < 4; i ++)
 		{
 			_histograms[i].print_histogram();
@@ -336,8 +333,6 @@ void Reconstructor::update()
 			_histograms[cluster].add_voxel(_visible_voxels[i]);	
 		}
 		
-		// update frame
-		frame_no += 1;
 	}
 }
 // Draws the voxels contained in histograms
