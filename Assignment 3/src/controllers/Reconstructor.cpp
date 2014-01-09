@@ -12,6 +12,7 @@
 
 
 
+
 // Histogram function
 vector<Histogram> _histograms;
 // returns the histograms
@@ -22,6 +23,7 @@ vector<Histogram>& getHistograms()
 
 using namespace std;
 using namespace cv;
+
 
 namespace nl_uu_science_gmt
 {
@@ -140,6 +142,8 @@ void Reconstructor::initialize()
 	cout << "done!" << endl;	
 }
 
+
+
 /**
  * Count the amount of camera's each voxel in the space appears on,
  * if that amount equals the amount of cameras, add that voxel to the
@@ -187,20 +191,40 @@ void Reconstructor::update()
 	{
 		kMeans(_visible_voxels, 4,  _centroids, _clusters);
 		//Check the centroid distances to eachother
+		// If not right distance just execute Kmeans again
 		while(!check_centroids(_centroids))
 		{
 			kMeans(_visible_voxels, 4,  _centroids, _clusters);
 		}
-		cout<<_clusters[0].size()<<endl; 
-		cout<<_clusters[1].size()<<endl; 
-		cout<<_clusters[2].size()<<endl; 
-		cout<<_clusters[3].size()<<endl; 
 
-		// Fill all histograms givewn current clustering
-		Histogram h1(_clusters[0], _cameras, frame_no);
-		Histogram h2(_clusters[1], _cameras, frame_no);
-		Histogram h3(_clusters[2], _cameras, frame_no);
-		Histogram h4(_clusters[3], _cameras, frame_no);
+		// For each camera determine the closes voxel in this specific frame
+		//Voxel* camera_1 [640][480];
+	
+		_closest_voxel.resize(4);
+		for(int i = 0; i < _closest_voxel.size(); i++)
+		{
+			_closest_voxel[i].resize(648);
+			for(int j = 0; j < 648; j ++)
+			{
+				_closest_voxel[i][j].resize(488);
+
+				for(int k = 0; k < 488; k++)
+				{
+					_closest_voxel[i][j][k] = NULL;
+				}
+			}
+		}
+
+		Histogram::find_closest_voxels(_closest_voxel, _cameras, _visible_voxels);
+		
+		// Fix occlusion given 
+		//vector<Voxel*> closest_voxels;
+
+		// Fill all histograms given current clustering
+		Histogram h1(_clusters[0], _cameras, frame_no, _closest_voxel);
+		Histogram h2(_clusters[1], _cameras, frame_no, _closest_voxel);
+		Histogram h3(_clusters[2], _cameras, frame_no, _closest_voxel);
+		Histogram h4(_clusters[3], _cameras, frame_no, _closest_voxel);
 
 		// Store in the histogram vector
 		_histograms.push_back(h1);
@@ -244,11 +268,26 @@ void Reconstructor::update()
 			_histograms[i].remove_voxels();
 		}
 
+		// Reset all closest voxels back to 0
+		for(int i = 0; i < _closest_voxel.size(); i++)
+		{
+			for(int j = 0; j < 640; j ++)
+			{
+				for(int k = 0; k < 480; k++)
+				{
+					_closest_voxel[i][j][k] = NULL;
+				}
+			}
+		}
+		// Refind closest foxels for this frame
+		Histogram::find_closest_voxels(_closest_voxel, _cameras, _visible_voxels);
+
+
 		// We now can label voxels using the color histograms.
 		for(int i = 0; i < _visible_voxels.size(); i ++)
 		{
 			// get colour from voxel 
-			int h = Histogram::get_colour(_visible_voxels[i], _cameras, hsv);
+			int h = Histogram::get_colour(_visible_voxels[i], _cameras, hsv, _closest_voxel);
 			
 			double match = 0;
 			int bin = 0;
@@ -282,8 +321,6 @@ void Reconstructor::update()
 			_histograms[i].remove_voxels();
 		}
 		
-
-
 		// Redistribute voxels over centroids()
 		for(int i = 0; i < _visible_voxels.size(); i ++)
 		{

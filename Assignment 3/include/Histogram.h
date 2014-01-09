@@ -3,6 +3,7 @@
 #include <iostream> 
 #include "Reconstructor.h"
 using namespace nl_uu_science_gmt;
+using namespace std;
 // THis is the class that creates color histograms
 class Histogram
 {
@@ -13,11 +14,14 @@ class Histogram
 
 	public:
 
-	std::vector<Reconstructor::Voxel*> voxel_list;
+	vector<Reconstructor::Voxel*> voxel_list;
 	// The input consists of the voxels belonging to the cluster which we are creating a histogram for.
-	Histogram(std::vector<Reconstructor::Voxel*> cluster_members, std::vector<Camera*> c,int k);
+	Histogram(vector<Reconstructor::Voxel*> cluster_members, vector<Camera*> c, int k, vector<vector<vector<Reconstructor::Voxel*>>> &camera);
 	
-	static double get_colour(Reconstructor::Voxel *v, std::vector<Camera*> c, std::vector<cv::Mat> hsv);
+	static double get_colour(Reconstructor::Voxel *v, vector<Camera*> c, vector<cv::Mat> hsv, vector<vector<vector<Reconstructor::Voxel*>>> &camer);
+	static void find_closest_voxels(vector<vector<vector<Reconstructor::Voxel*>>> &camera_1, vector<Camera*> c, vector<Reconstructor::Voxel*> voxels);
+	static bool is_valid(Reconstructor::Voxel* v1, Reconstructor::Voxel* v2);
+
 	void add_voxel(Reconstructor::Voxel* v);
 	double calculate_centroid_distance(Reconstructor::Voxel* v);
 	void calculate_centroid();

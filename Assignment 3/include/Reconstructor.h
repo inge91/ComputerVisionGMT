@@ -52,6 +52,7 @@ private:
 	//The centroid vector
 	std::vector<Voxel*> _centroids;
 	std::vector<Voxel*> _clusters[4];
+	std::vector<std::vector<std::vector<Voxel*>>> _closest_voxel; 
 
 
 	void initialize();

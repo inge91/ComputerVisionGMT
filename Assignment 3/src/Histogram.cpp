@@ -1,6 +1,6 @@
 #include "Histogram.h"
 
-Histogram::Histogram(std::vector<Reconstructor::Voxel*> cluster_members, std::vector<Camera*> c, int k)
+Histogram::Histogram(vector<Reconstructor::Voxel*> cluster_members, vector<Camera*> c, int k, vector<vector<vector<Reconstructor::Voxel*>>> &camera)
 {
 	centroid.x = 0;
 	centroid.y = 0;
@@ -18,7 +18,7 @@ Histogram::Histogram(std::vector<Reconstructor::Voxel*> cluster_members, std::ve
 	cv::cvtColor(frame_rgb1,frame_hsv1,CV_RGB2HSV);
 	cv::cvtColor(frame_rgb2,frame_hsv2,CV_RGB2HSV);
 	cv::cvtColor(frame_rgb3,frame_hsv3,CV_RGB2HSV);
-	std::vector<cv::Mat> hsv;
+	vector<cv::Mat> hsv;
 	hsv.push_back(frame_hsv0);
 	hsv.push_back(frame_hsv1);
 	hsv.push_back(frame_hsv2);
@@ -32,8 +32,11 @@ Histogram::Histogram(std::vector<Reconstructor::Voxel*> cluster_members, std::ve
 	for(int i = 0; i < cluster_members.size(); i++)
 	{
 
-		int h = get_colour(cluster_members[i], c, hsv);
-		histogram[h/5] ++;
+		int h = get_colour(cluster_members[i], c, hsv, camera);
+		if(h >= 0)
+		{
+			histogram[h/5] ++;
+		}
 	}
 	// normalize the histogram 
 	normalize();
@@ -47,15 +50,15 @@ void Histogram::normalize()
 	for(int i = 0; i < 72; i++)
 	{
 		total += histogram[i];
-		//std::cout<< total<<std::endl;
+		//cout<< total<<endl;
 	}
 
-		//std::cout<<"Total"<<std::endl;
-		//std::cout<< total<<std::endl;
+		//cout<<"Total"<<endl;
+		//cout<< total<<endl;
 
 	for(int i = 0; i < 72; i++)
 	{
-		//std::cout<<histogram[i]/total<<std::endl;
+		//cout<<histogram[i]/total<<endl;
 		histogram[i] = histogram[i] / total;
 	}
 }
@@ -65,33 +68,43 @@ void Histogram::normalize()
 // pixel combination and only use voxel closest to camera
 
 
+// Check if the voxels are the same
+bool Histogram::is_valid(Reconstructor::Voxel* v1, Reconstructor::Voxel* v2)
+{
+	if( v1->x == v2->x && v1->y == v2->y && v1->z == v2->z)
+	{
+		return true;
+	}
+	return false;
+}
+
 // returns the color from a single voxel
-double Histogram::get_colour(Reconstructor::Voxel* v, std::vector<Camera*> c, std::vector<cv::Mat> hsv)
+double Histogram::get_colour(Reconstructor::Voxel* v, vector<Camera*> c, vector<cv::Mat> hsv,  vector<vector<vector<Reconstructor::Voxel*>>> &camera)
 {
 	// Get all camera projections
-	std::vector<cv::Point> cameras = v->camera_projection;
+	vector<cv::Point> cameras = v->camera_projection;
 	// Get the validity of all camera projections
-	std::vector<int> validity = v->valid_camera_projection;
+	vector<int> validity = v->valid_camera_projection;
 
 	// Loop through all camera projections and only use the valid ones
 	// to find out mean color
 	double h = 0;
 	int cameras_used = 0;
-	for(int j = 0; j < 4; j ++)//cameras.size(); j++)
+	for(int j = 0; j < camera.size(); j ++)
 	{
-
-		// Still need to fix occlusion (validity is not it)
-		if(validity[j] == 1)
+		cv::Point pos = cameras[j];
+		if(Histogram::is_valid(v, camera[j][pos.x][pos.y]))
 		{
-			cv::Point pos = cameras[j];
 			// Convert frame to hsv
 			h += hsv[j].at<cv::Vec3b>(pos)[0];
 			cameras_used += 1;
 		}
 	}
-	// Final hue value
-	h /= cameras_used;
-	return h;
+	if (cameras_used == 0 )
+	{
+		return -1;
+	}
+	else return h /= cameras_used;
 }
 
 // Calculate the distance between a voxel color and histogram
@@ -117,10 +130,10 @@ void Histogram::print_histogram()
 {
 	for(int i = 0; i < 25; i++)
 	{
-		std::cout<< histogram[i] << " ";
+		cout<< histogram[i] << " ";
 	}
 
-		std::cout<<std::endl;
+		cout<<endl;
 }
 
 
@@ -137,11 +150,11 @@ void Histogram::calculate_centroid()
 	double total_x = 0;
 	double total_z = 0;
 	
-	//std::cout<<"voxel list size " << voxel_list.size()<<std::endl;
+	//cout<<"voxel list size " << voxel_list.size()<<endl;
 	for(int i = 0; i < voxel_list.size(); i++)
 	{
 		
-		//std::cout<< " x y "<< voxel_list[i]->x << " "<< voxel_list[i]->y<<std::endl;
+		//cout<< " x y "<< voxel_list[i]->x << " "<< voxel_list[i]->y<<endl;
 		total_x += voxel_list[i]->x;
 		total_z += voxel_list[i]->z;
 		
@@ -151,7 +164,7 @@ void Histogram::calculate_centroid()
 	centroid.y = 0;
 	centroid.z = total_z / voxel_list.size();
 		
-//	std::cout<<"centroid x y z: "<< centroid.x << " "<< centroid.y<< " "<<centroid.z <<std::endl;
+//	cout<<"centroid x y z: "<< centroid.x << " "<< centroid.y<< " "<<centroid.z <<endl;
 }
 
 double Histogram::calculate_centroid_distance(Reconstructor::Voxel* v)
@@ -169,3 +182,43 @@ void Histogram::remove_voxels()
 }
 
 
+// Put only the closes voxels at eat projeciton point in camera view array 
+void Histogram::find_closest_voxels(vector<vector<vector<Reconstructor::Voxel*>>> &camera, 
+									vector<Camera*> c, vector<Reconstructor::Voxel*> voxels)
+
+{
+	// Loop through all voxels and update positions in camera in case this new position is closer
+	for (Reconstructor::Voxel *v : voxels)
+	{
+		for(int i = 0 ; i < c.size(); i ++)
+		{
+			// Get the pixel the voxel is projected to for this camera view
+			cv::Point p = v->camera_projection[i];
+			// In case the current pointer is a null pointer replace it by pointing to this voxel
+			if(camera[i][p.x][p.y] == NULL)
+			{
+				camera[i][p.x][p.y] = v;
+			}
+			else 
+			{
+				
+				cv::Point3f f = c[i]->getCameraLocation();
+				double dx = f.x - v->x;
+				double dy = f.y - v->y;
+				double dz = f.z - v->z;
+				double newlength = sqrt(dx * dx + dy * dy + dz * dz);
+				dx = f.x - camera[i][p.x][p.y]->x;
+				dy = f.y - camera[i][p.x][p.y]->y;
+				dz = f.z - camera[i][p.x][p.y]->z;
+				double oldlength = sqrt(dx * dx + dy * dy + dz * dz);
+
+				// If the new voxel is closer than the voxel before, change it to the new one
+				if(newlength < oldlength)
+				{
+					camera[i][p.x][p.y] = v;
+				}
+			}
+		}
+	}
+
+}
