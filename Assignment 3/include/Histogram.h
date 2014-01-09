@@ -4,7 +4,7 @@
 #include "Reconstructor.h"
 using namespace nl_uu_science_gmt;
 using namespace std;
-#define HISTOGRAM_SIZE 36
+#define HISTOGRAM_SIZE 360
 // THis is the class that creates color histograms
 class Histogram
 {
