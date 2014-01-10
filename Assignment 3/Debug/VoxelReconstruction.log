@@ -1,4 +1,4 @@
-﻿Build started 9-1-2014 19:20:00.
+﻿Build started 10-1-2014 21:07:40.
      1>Project "C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 3\VoxelReconstruction.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /Iinclude /IC:\opencv246\build\x86\vc11\include /IC:\opencv246\build\x86\vc11\..\..\include /Zi /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt src\controllers\Reconstructor.cpp
@@ -9,10 +9,13 @@
      1>src\controllers\Reconstructor.cpp(280): warning C4018: '<' : signed/unsigned mismatch
      1>src\controllers\Reconstructor.cpp(283): warning C4244: 'initializing' : conversion from 'double' to 'int', possible loss of data
      1>src\controllers\Reconstructor.cpp(292): warning C4018: '<' : signed/unsigned mismatch
-     1>src\controllers\Reconstructor.cpp(307): warning C4018: '<' : signed/unsigned mismatch
-     1>src\controllers\Reconstructor.cpp(317): warning C4018: '<' : signed/unsigned mismatch
-     1>src\controllers\Reconstructor.cpp(323): warning C4018: '<' : signed/unsigned mismatch
-     1>src\controllers\Reconstructor.cpp(362): warning C4018: '<' : signed/unsigned mismatch
+     1>src\controllers\Reconstructor.cpp(311): warning C4018: '<' : signed/unsigned mismatch
+     1>src\controllers\Reconstructor.cpp(320): warning C4018: '<' : signed/unsigned mismatch
+     1>src\controllers\Reconstructor.cpp(326): warning C4018: '<' : signed/unsigned mismatch
+     1>src\controllers\Reconstructor.cpp(338): warning C4258: 'i' : definition from the for loop is ignored; the definition from the enclosing scope is used
+                 src\controllers\Reconstructor.cpp(320) : definition of 'i' ignored
+                 src\controllers\Reconstructor.cpp(308) : definition of 'i' used
+     1>src\controllers\Reconstructor.cpp(367): warning C4018: '<' : signed/unsigned mismatch
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 3\Debug\VoxelReconstruction.exe" /INCREMENTAL /NOLOGO /LIBPATH:lib /LIBPATH:C:\opencv246\build\x86\vc11\x86\vc11\lib /LIBPATH:C:\opencv246\build\x86\vc11\lib opencv_core246d.lib opencv_highgui246d.lib opencv_imgproc246d.lib opencv_calib3d246d.lib OpenGL32.lib Glu32.lib opencv_core246d.lib opencv_imgproc246d.lib opencv_highgui246d.lib opencv_ml246d.lib opencv_video246d.lib opencv_features2d246d.lib opencv_calib3d246d.lib opencv_objdetect246d.lib opencv_contrib246d.lib opencv_legacy246d.lib opencv_flann246d.lib gltools.lib freeglut_static.lib glut32.lib glu32.lib opengl32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 3\Debug\VoxelReconstruction.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Inge\Documents\Visual Studio 2012\Projects\Computer Vision\Assignment 3\Debug\VoxelReconstruction.lib" /MACHINE:X86 Debug\ClusterHistogram.obj
          Debug\arcball.obj
@@ -29,4 +32,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:05.04
+Time Elapsed 00:00:04.55

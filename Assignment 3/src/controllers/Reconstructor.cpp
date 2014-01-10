@@ -304,33 +304,38 @@ void Reconstructor::update(int frame_no)
 			_histograms[bin].add_voxel(_visible_voxels[i]);
 		}
 		
-		for(int i = 0; i < _histograms.size(); i++)//_histograms.size(); i ++)
+
+		int i = 0;
+		while(i < 5)
 		{
-		
-			// Calculate centroid
-			_histograms[i].calculate_centroid();
-			// remove voxels
-			_histograms[i].remove_voxels();
-		}
-		
-		// Redistribute voxels over centroids()
-		for(int i = 0; i < _visible_voxels.size(); i ++)
-		{
-			int cluster = 9;
-			double min = 999999;
-			
-			// calculate the distance to each centroid.
-			for(int j = 0; j < _histograms.size(); j++)
+			for(int i = 0; i < _histograms.size(); i++)//_histograms.size(); i ++)
 			{
-				double distance = _histograms[j].calculate_centroid_distance(_visible_voxels[i]);
-				if (distance < min)
-				{
-					min = distance;
-					cluster = j;
-				}
+			
+				// Calculate centroid
+				_histograms[i].calculate_centroid();
+				// remove voxels
+				_histograms[i].remove_voxels();
 			}
-			// Add the voxel to the right cluster
-			_histograms[cluster].add_voxel(_visible_voxels[i]);	
+			// Redistribute voxels over centroids()
+			for(int i = 0; i < _visible_voxels.size(); i ++)
+			{
+				int cluster = 9;
+				double min = 999999;
+				
+				// calculate the distance to each centroid.
+				for(int j = 0; j < _histograms.size(); j++)
+				{
+					double distance = _histograms[j].calculate_centroid_distance(_visible_voxels[i]);
+					if (distance < min)
+					{
+						min = distance;
+						cluster = j;
+					}
+				}
+				// Add the voxel to the right cluster
+				_histograms[cluster].add_voxel(_visible_voxels[i]);	
+			}
+			i++;
 		}
 		
 	}

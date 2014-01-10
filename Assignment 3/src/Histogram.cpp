@@ -87,6 +87,8 @@ double Histogram::get_colour(Reconstructor::Voxel* v, vector<Camera*> c, vector<
 	// Loop through all camera projections and only use the valid ones
 	// to find out mean color
 	double h = 0;
+	double s = 0;
+	double value = 0;
 	int cameras_used = 0;
 	for(int j = 0; j < camera.size(); j ++)
 	{
@@ -95,10 +97,15 @@ double Histogram::get_colour(Reconstructor::Voxel* v, vector<Camera*> c, vector<
 		{
 			// Convert frame to hsv
 			h += hsv[j].at<cv::Vec3b>(pos)[0];
+			s += hsv[j].at<cv::Vec3b>(pos)[1];
+			value += hsv[j].at<cv::Vec3b>(pos)[2];
 			cameras_used += 1;
 		}
 	}
-	if (cameras_used == 0 )
+	s /= cameras_used;
+	value /= cameras_used;
+
+	if (cameras_used == 0 || (s < 25 || value < 25))
 	{
 		return -1;
 	}
