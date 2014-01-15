@@ -10,11 +10,11 @@ class Histogram
 {
 	// The histogram uses the Hue channel with a range of 10 for each bin
 	double histogram[HISTOGRAM_SIZE];
-	Reconstructor::Voxel centroid;
 
 
 	public:
 
+	Reconstructor::Voxel centroid;
 	vector<Reconstructor::Voxel*> voxel_list;
 	// The input consists of the voxels belonging to the cluster which we are creating a histogram for.
 	Histogram(vector<Reconstructor::Voxel*> cluster_members, vector<Camera*> c, int k, vector<vector<vector<Reconstructor::Voxel*>>> &camera);

@@ -183,7 +183,7 @@ double calculate_distance(Reconstructor::Voxel* v, Reconstructor::Voxel* v2)
 	double dx = v->x - v2->x;
 	double dy = v->y - v2->y;
 	double dz = v->z - v2->z;
-	return 	sqrt(dx * dx + dy * dy + dz * dz);
+	return 	sqrt(dx * dx + dy * dy );//+ dz * dz);
 }
 
 
@@ -196,13 +196,12 @@ Reconstructor::Voxel* calculate_centroids(std::vector<Reconstructor::Voxel*> v)
 	{
 		x += v[i]->x;
 		y += v[i]->y;
-		z += v[i]->z;
 
 	}
 	Reconstructor::Voxel* centroid = new Reconstructor::Voxel;
 	centroid->x = x / v.size();
 	centroid->y = y / v.size();
-	centroid->z = z / v.size();
+	centroid->z = z;
 	
 	return centroid;
 }
@@ -216,8 +215,8 @@ bool centroid_change(vector<Reconstructor::Voxel*> prev_centroids, vector<Recons
 	for(int i = 0; i < prev_centroids.size(); i++)
 	{
 		if(prev_centroids[i]->x != centroids[i]->x ||
-			prev_centroids[i]->y != centroids[i]->y ||
-			prev_centroids[i]->z != centroids[i]->z)
+			prev_centroids[i]->y != centroids[i]->y)
+			
 		{
 			return true;
 		}
@@ -287,6 +286,7 @@ void kMeans(vector<Reconstructor::Voxel*> v, const int nr_centroids, vector<Reco
 	}
 }
 
+// Sort on y value of voxels(ascending order)
 bool wayToSort(Reconstructor::Voxel* i, Reconstructor::Voxel* j)
 {
 	return i->y < j->y; 
@@ -300,14 +300,21 @@ bool check_centroids(vector<Reconstructor::Voxel*> centroid)
 	double dymax = 10; 
 	sort(centroid.begin(), centroid.end(), wayToSort);
 
-	for(int k = 0; k < centroid.size(); k++)
-	{
-		cout<<"centroid "<< k << ": " << centroid[k]->x << " "<< centroid[k]->y << " "<<centroid[k]->z<<endl;
-	}
+	// In case the first two centroids are left of the y-axis, check if the distance between these two centroids
+	// is roughly the same as the next two. If so, return true. Else false.
 	if((centroid[0]->y < 0 && centroid[1]->y <0))
 	{
-		cout<<"Return true"<<endl;
-		return true;
+		double dist1 = calculate_distance(centroid[0], centroid[1]);
+		double dist2 = calculate_distance(centroid[2], centroid[3]);
+		std::cout<<dist1<<endl;
+		std::cout<<dist2<<endl;
+		std::cout<<"\n"<<endl;
+		if(abs(dist1 - dist2) < 400)
+		{
+			return true;
+		}
+
+		return false;
 	}
 	return false;
 

@@ -59,6 +59,7 @@ private:
 	void initialize();
 
 public:
+	bool different_centroids(std::vector<Voxel> prev_centroids);
 	static void draw_voxels();
 	Reconstructor(const std::vector<Camera*> &);
 	virtual ~Reconstructor();

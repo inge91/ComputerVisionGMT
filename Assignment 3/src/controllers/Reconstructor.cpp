@@ -140,6 +140,23 @@ void Reconstructor::initialize()
 }
 
 
+// Check if centroids have changed
+bool Reconstructor::different_centroids(vector<Voxel> prev_centroids)
+{
+
+	for (int i = 0; i < prev_centroids.size(); i++)
+	{
+		Voxel v = prev_centroids[i];
+		Voxel v2 = _histograms[i].centroid;
+		if( v.x != v2.x || v.y != v2.y || v.z != v2.z)
+		{
+			return true;
+		}
+	}
+
+	return false;
+
+}
 
 /**
  * Count the amount of camera's each voxel in the space appears on,
@@ -148,6 +165,8 @@ void Reconstructor::initialize()
  *
  * Optimized by inverting the process (iterate over voxels instead of camera pixels for each camera)
  */
+
+bool first = true;
 void Reconstructor::update(int frame_no)
 {
 	_visible_voxels.clear();
@@ -181,8 +200,9 @@ void Reconstructor::update(int frame_no)
 		}
 	}
 	// The very first clustering step
-	if (frame_no == 1)
+	if (first)
 	{
+		first = false;
 		kMeans(_visible_voxels, 4,  _centroids, _clusters);
 		//Check the centroid distances to eachother
 		// If not right distance just execute Kmeans again
@@ -282,7 +302,7 @@ void Reconstructor::update(int frame_no)
 			// get colour from voxel 
 			int h = Histogram::get_colour(_visible_voxels[i], _cameras, hsv, _closest_voxel);
 			// Skip distance calculation in case there are no projections to camera
-			if(h == -1)
+			if(h == -1|| _visible_voxels[i]->z < 350)
 			{
 				continue;
 			}
@@ -304,13 +324,16 @@ void Reconstructor::update(int frame_no)
 			_histograms[bin].add_voxel(_visible_voxels[i]);
 		}
 		
+		vector<Voxel> prev_centroids(4);
 
-		int i = 0;
-		while(i < 5)
+		bool initial = true;
+		while(initial || different_centroids(prev_centroids))
 		{
+			initial = false;
 			for(int i = 0; i < _histograms.size(); i++)//_histograms.size(); i ++)
 			{
 			
+				prev_centroids[i] =  _histograms[i].centroid;
 				// Calculate centroid
 				_histograms[i].calculate_centroid();
 				// remove voxels
@@ -335,7 +358,6 @@ void Reconstructor::update(int frame_no)
 				// Add the voxel to the right cluster
 				_histograms[cluster].add_voxel(_visible_voxels[i]);	
 			}
-			i++;
 		}
 		
 	}

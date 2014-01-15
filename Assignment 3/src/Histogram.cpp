@@ -31,7 +31,10 @@ Histogram::Histogram(vector<Reconstructor::Voxel*> cluster_members, vector<Camer
 	}
 	for(int i = 0; i < cluster_members.size(); i++)
 	{
-
+		if(cluster_members[i]->z < 350)
+		{
+			continue;
+		}
 		int h = get_colour(cluster_members[i], c, hsv, camera);
 		if(h >= 0)
 		{
