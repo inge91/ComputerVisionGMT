@@ -31,7 +31,7 @@ Histogram::Histogram(vector<Reconstructor::Voxel*> cluster_members, vector<Camer
 	}
 	for(int i = 0; i < cluster_members.size(); i++)
 	{
-		if(cluster_members[i]->z < 350)
+		if(cluster_members[i]->z < 800)
 		{
 			continue;
 		}
@@ -171,8 +171,8 @@ void Histogram::calculate_centroid()
 
 	centroid.x = total_x / voxel_list.size();
 	centroid.y = total_y / voxel_list.size();
-	centroid.z = total_z / voxel_list.size();
-		
+	//centroid.z = total_z / voxel_list.size();
+	centroid.z = 0;
 }
 
 double Histogram::calculate_centroid_distance(Reconstructor::Voxel* v)
@@ -180,7 +180,7 @@ double Histogram::calculate_centroid_distance(Reconstructor::Voxel* v)
 	double dx = v->x - centroid.x;
 	double dy = v->y - centroid.y;
 	double dz = v->z - centroid.z;
-	return 	sqrt(dx * dx + dy * dy + dz * dz);
+	return 	sqrt(dx * dx + dy * dy);
 }
 
 

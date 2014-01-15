@@ -169,6 +169,8 @@ bool Reconstructor::different_centroids(vector<Voxel> prev_centroids)
 bool first = true;
 void Reconstructor::update(int frame_no)
 {
+
+	cout<<"frame no: "<< frame_no<<endl;
 	_visible_voxels.clear();
 
 #ifdef PARALLEL_PROCESS
@@ -257,14 +259,16 @@ void Reconstructor::update(int frame_no)
 	{
 	
 		// make current frame hsv format for each camera
-		cv::Mat frame_rgb0 = _cameras[0]->getVideoFrame(frame_no);
-		cv::Mat frame_rgb1 = _cameras[1]->getVideoFrame(frame_no);
-		cv::Mat frame_rgb2 = _cameras[2]->getVideoFrame(frame_no);
-		cv::Mat frame_rgb3 = _cameras[3]->getVideoFrame(frame_no);
+
+		cv::Mat frame_rgb0 = _cameras[0]->getFrame();
+		cv::Mat frame_rgb1 = _cameras[1]->getFrame();
+		cv::Mat frame_rgb2 = _cameras[2]->getFrame();
+		cv::Mat frame_rgb3 = _cameras[3]->getFrame();
 		cv::Mat frame_hsv0;
 		cv::Mat frame_hsv1;
 		cv::Mat frame_hsv2;
 		cv::Mat frame_hsv3;
+
 		cv::cvtColor(frame_rgb0,frame_hsv0, CV_RGB2HSV);
 		cv::cvtColor(frame_rgb1,frame_hsv1, CV_RGB2HSV);
 		cv::cvtColor(frame_rgb2,frame_hsv2, CV_RGB2HSV);
@@ -274,7 +278,6 @@ void Reconstructor::update(int frame_no)
 		hsv.push_back(frame_hsv1);
 		hsv.push_back(frame_hsv2);
 		hsv.push_back(frame_hsv3);
-
 		// remove all voxels added to histograms
 		for (int i = 0; i < _histograms.size(); i++)
 		{
@@ -359,8 +362,10 @@ void Reconstructor::update(int frame_no)
 				_histograms[cluster].add_voxel(_visible_voxels[i]);	
 			}
 		}
-		
+
 	}
+		cout<<"frame no: "<< frame_no<<endl;
+		cout<<"\n"<<endl;
 }
 // Draws the voxels contained in histograms
 void Reconstructor::draw_voxels()
