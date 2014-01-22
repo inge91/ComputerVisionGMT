@@ -55,6 +55,10 @@ private:
 	std::vector<Voxel*> _clusters[4];
 	std::vector<std::vector<std::vector<Voxel*>>> _closest_voxel; 
 
+	std::vector<Voxel> track_centroid1;
+	std::vector<Voxel> track_centroid2;
+	std::vector<Voxel> track_centroid3;
+	std::vector<Voxel> track_centroid4;
 
 	void initialize();
 

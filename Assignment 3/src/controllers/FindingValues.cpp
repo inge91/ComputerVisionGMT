@@ -186,7 +186,7 @@ double calculate_distance(Reconstructor::Voxel* v, Reconstructor::Voxel* v2)
 	return 	sqrt(dx * dx + dy * dy );//+ dz * dz);
 }
 
-
+// Calculate centroid positions
 Reconstructor::Voxel* calculate_centroids(std::vector<Reconstructor::Voxel*> v)
 {
 	double x = 0;
@@ -206,6 +206,7 @@ Reconstructor::Voxel* calculate_centroids(std::vector<Reconstructor::Voxel*> v)
 	return centroid;
 }
 
+// Cechk if centroids have changed
 bool centroid_change(vector<Reconstructor::Voxel*> prev_centroids, vector<Reconstructor::Voxel*> centroids)
 {
 	if(prev_centroids[0] == NULL)

@@ -1,4 +1,6 @@
 #include "Histogram.h"
+// Written by Inge Becht 4157281
+//			  Merijn van Tooren 3689557
 
 Histogram::Histogram(vector<Reconstructor::Voxel*> cluster_members, vector<Camera*> c, int k, vector<vector<vector<Reconstructor::Voxel*>>> &camera)
 {
@@ -129,12 +131,13 @@ double Histogram::calculate_distance(cv::Vec3b f)
 	//return total;
 	return histogram[bin];
 }
-
+// return histogram
 double* Histogram::get_histogram()
 {
 	return histogram;
 }
 
+// Print histogram
 void Histogram::print_histogram()
 {
 	for(int i = 0; i < HISTOGRAM_SIZE; i++)
