@@ -464,6 +464,7 @@ void Detector::run()
 
 	Mat labels_train;
 	svm.predict(data, labels_train);
+	cout<<labels_train<<endl;
 
 	Mat labels_32F;
 	labels.convertTo(labels_32F, CV_32F);
@@ -477,19 +478,29 @@ void Detector::run()
 	cout << "\tSupport vector(s): " << sv_count << ", vector-length: " << sv_length << endl;
 
 	CvSVMDecisionFunc* decision = svm.getDecisionFunc();
+
 	Mat W = Mat::zeros(1, sv_length, CV_64F);
+
+	const double b = -decision->rho;
 	for (int i = 0; i < sv_count; ++i)
 	{
 		// Compute W from support_vector and decision->alpha
 		const float* support_vector = svm.get_support_vector(i);
 		for (int j = 0; j < sv_length; ++j)
+		{
 			W.at<double>(0, j) += decision->alpha[i] * support_vector[j];
-	}
+	 	}		
 
-	const double b = -decision->rho;
+
+	} 
+
+
 	cout << "line:" << __LINE__ << ") bias: " << b << endl;
 
-	/*
+	Mat train_gnd =  ((labels_train > 0 / 255 * 2 - 1));
+
+	// val gnd are the real classes of validation data
+	
 	 {
 	 // Compute the confidence values for training and validation as the distances
 	 // between the sample vectors X and weight vector W, using bias b:
@@ -501,8 +512,14 @@ void Detector::run()
 	 // The confidence value for training should be the same value you get from
 	 // svm.predict(data, labels_train);
 
-	 Mat conf_train = ...;
-	 Mat conf_val = ...;
+	 // Some preprocessing
+	 Mat W2;
+	 data.convertTo(data, 6);
+	 cv::transpose(W, W2);
+
+	 Mat conf_train = data * W2 + b;
+	 Mat conf_val = val_data * W2 + b;
+	
 	 Mat train_pred = (conf_train > 0) / 255;
 	 Mat val_pred = (conf_val > 0) / 255;
 	 double train_true = train_pred.rows - sum((train_pred == train_gnd) / 255)[0];
@@ -512,7 +529,7 @@ void Detector::run()
 	 cout << "\tTraining correct: " << train_pct << "%" << endl;
 	 cout << "\tValidation correct: " << val_pct << "%" << endl;
 	 }
-	 */
+	 
 
 	best_W = W;
 	best_b = b;
