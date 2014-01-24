@@ -536,10 +536,13 @@ void Detector::run()
 	best_c = C;
 
 	Mat W_rect(height, width, CV_64F);
-	W_rect.data = best_W.data;
+	//W_rect.data = strncpy(best_W.data);
+	W_rect = best_W.clone();
 	assert((int ) best_W.total() == width * height);
 
 	normalize(W_rect, W_rect, 255, 0, NORM_MINMAX);
+
+	
 	Mat W_img, nW_img;
 	W_rect.convertTo(W_img, CV_8U);
 	bitwise_not(W_img, nW_img);
@@ -646,16 +649,9 @@ void Detector::run()
 		 * Mat detect = ...;
 		 */
 		Mat detect(sub_windows.rows, 1, CV_64F);
-		for (int i = 0; i < sub_windows.rows; ++i)
-		{
-			Mat sub1dF;
-			if (sub_windows.type() == CV_32F)
-				sub1dF = sub_windows.row(i);
-			else
-				sub_windows.row(i).convertTo(sub1dF, CV_32F);
-
-			detect.at<double>(i, 0) = (double) svm.predict(sub1dF, true);
-		}
+		cv::transpose(W, W);
+		detect = sub_windows * W + b; 
+		//cout<<detect<<endl;
 
 		// Show detection results as a heatmap of most likely face locations for this pyramid layer
 		Mat face_locations = Mat(detect.t()).reshape(detect.channels(),
