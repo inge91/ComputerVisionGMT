@@ -307,10 +307,70 @@ void Detector::readNegData(const std::vector<std::string> &neg_train, cv::Mat &n
  * .
  *
  * The layers in between are linearly resized by a factor, in between the scale interval layers.
+ *
+ *
  */
 void Detector::createPyramid(const Mat &image, vector<Mat*> &pyramid)
 {
+	double tmp1 = MIN(image.rows, image.cols);
+	double tmp2 = (double) 2 * _target_width;
+	double tmp3 = log(tmp1 / tmp2);
+	double tmp4 = log(_layer_scale_factor);
+
+  	int max_layers = 1 + floor(tmp3 / tmp4);
+
+	cout<<" Max layers " <<max_layers; 
+
+	int m;
+	m = MAX(max_layers, _layer_scale_interval) + _layer_scale_interval;
+	cout<<"m "<<m<<endl;
+	// width and height of the original image size
+	cv::Size s = image.size();
+	double w = s.width;
+	double h = s.height;
+	double w_step = w/2;
+	double h_step = h/2;
 	pyramid.push_back(new Mat(image));
+
+	double delta_w = w_step / _layer_scale_interval; 
+	double delta_h = h_step / _layer_scale_interval; 
+	int counter = 1;
+	
+	
+	for(int i = 1; i <= m; i++)
+	{
+		// In case we  are at layer scale interval, change step size
+		if(i % _layer_scale_interval == 0)
+		{
+			cv::Size si;
+			double temp_w = (w_step * 2) - counter * delta_w;
+			double temp_h = (h_step * 2) - counter * delta_h;
+			si.width = ceil(temp_w);
+			si.height = ceil(temp_h);
+			Mat tmp;
+			resize(image, tmp, si, 0, 0);
+
+			w_step = w_step/2;
+			h_step = h_step/2;
+			delta_w = w_step / _layer_scale_interval; 
+			delta_h = h_step / _layer_scale_interval; 
+
+			pyramid.push_back(new Mat(tmp));
+			counter = 1;
+		}
+		else{
+			double temp_w = (w_step * 2) - counter * delta_w;
+			double temp_h = (h_step * 2) - counter * delta_h;
+			cv::Size si;
+			si.width = ceil(temp_w);
+			si.height = ceil(temp_h);
+			Mat tmp;
+			resize(image, tmp, si, 0, 0);
+			pyramid.push_back(new Mat(tmp));
+			counter ++;
+		}
+
+	}
 }
 
 void Detector::run()
@@ -494,7 +554,6 @@ void Detector::run()
 
 	} 
 
-
 	cout << "line:" << __LINE__ << ") bias: " << b << endl;
 
 	Mat train_gnd =  ((labels_train > 0 / 255 * 2 - 1));
@@ -591,15 +650,19 @@ void Detector::run()
 	vector<double> fps;
 	int64 t0 = Utility::get_time_curr_tick();
 
+		cv::transpose(W, W);
 	for (size_t layer = 0; layer < pyramid.size(); ++layer)
 	{
 		string etf = Utility::show_fancy_etf(layer, pyramid.size(), 1, t0, fps);
 		if (!etf.empty()) cout << etf << endl;
-
 		// Generate subwindow locations
+
 		Range rx(0, pyramid.at(layer)->cols - _model_size.width);
 		Range ry(0, pyramid.at(layer)->rows - _model_size.height);
+		//cout<<rx.size()<<endl;
+		//cout<<ry.size()<<endl;
 		Mat1i X, Y;
+
 		Utility::meshgrid(rx, ry, X, Y);
 		Mat X1 = X.reshape(1, 1);
 		Mat Y1 = Y.reshape(1, 1);
@@ -618,7 +681,6 @@ void Detector::run()
 			Mat sub1d = sub.reshape(1, 1);
 			Mat sub1dF;
 			sub1d.convertTo(sub1dF, CV_64F);
-
 			Mat mean, stddev;
 			meanStdDev(sub1dF, mean, stddev);
 			Mat mean_line(1, sub1dF.cols, CV_64F);
@@ -649,7 +711,7 @@ void Detector::run()
 		 * Mat detect = ...;
 		 */
 		Mat detect(sub_windows.rows, 1, CV_64F);
-		cv::transpose(W, W);
+
 		detect = sub_windows * W + b; 
 		//cout<<detect<<endl;
 
@@ -658,6 +720,7 @@ void Detector::run()
 				(pyramid.at(layer)->size().height - _model_size.height) + 1);
 		Mat heatmap;
 		Utility::get_heatmap(-face_locations, heatmap);
+
 		namedWindow("Face heatmap", CV_WINDOW_KEEPRATIO);
 		imshow("Face heatmap", heatmap);
 		waitKey(200);
