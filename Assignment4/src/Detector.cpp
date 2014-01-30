@@ -170,14 +170,10 @@ void Detector::readPosData(const std::vector<std::string> &pos_train, cv::Mat &p
 		resize(features, features, _model_size);
 
 		hog.compute(features, descriptors);
+		Mat tmp(descriptors);
 		
-		// Fill vector with std:: vecotr type and pushback on matrix
-		Mat tmp = Mat::eye(1, descriptors.size(), CV_64F);
-		
-		for(int i = 0; i < descriptors.size(); i++)
-		{
-			tmp.at<float>(i) = descriptors[i];
-		}
+		tmp = tmp.reshape(1, 1);
+		tmp.convertTo(tmp, CV_64F);
 		pos_hog.push_back(tmp);
 
 
@@ -274,14 +270,11 @@ void Detector::readNegData(const std::vector<std::string> &neg_train, cv::Mat &n
 			Mat features = image(Rect(Point(x, y), _model_size)).clone();
 
 			hog.compute(features, descriptors);
+			Mat tmp(descriptors);
+				
 		
-			// Fill vector with std:: vecotr type and pushback on matrix
-			Mat tmp = Mat::eye(1, descriptors.size(), CV_64F);
-			
-			for(int i = 0; i < descriptors.size(); i++)
-			{
-				tmp.at<float>(i) = descriptors[i];
-			}
+			tmp = tmp.reshape(1, 1);
+			tmp.convertTo(tmp, CV_64F);
 			neg_hog.push_back(tmp);
 
 
@@ -499,8 +492,8 @@ void Detector::run()
 	train_data.push_back(_do_whitening ? whitened_pos_data : pos_train_data);
 	train_data.push_back(_do_whitening ? whitened_neg_data : neg_train_data);
 
-	train_hog.push_back(pos_train_hog.t());
-	train_hog.push_back(neg_train_hog.t());
+	train_hog.push_back(pos_train_hog);
+	train_hog.push_back(neg_train_hog);
 
 	Mat pos_labels = Mat(pos_train_data.rows, 1, CV_32S, Scalar::all(1));
 	Mat neg_labels = Mat(neg_train_data.rows, 1, CV_32S, Scalar::all(-1));
@@ -550,7 +543,8 @@ void Detector::run()
 
 	////////////////////Test model from mean of images /////////////////////////
 	//Mat alt_pred = (val_data * _pos_sumF.t() > 0) / 255;
-	Mat alt_pred = (val_hog * _pos_sumF.t() > 0) / 255;
+	cout<<val_hog.size()<<endl;
+	Mat alt_pred = (val_data * _pos_sumF.t() > 0) / 255;
 	double alt_true = alt_pred.size().height - sum((alt_pred == val_gnd) / 255)[0];
 	double alt_pct = (alt_true / (double) alt_pred.size().height) * 100.0;
 	cout << "Validation correct with mean model: " << alt_pct << "%" << endl;
@@ -583,11 +577,14 @@ void Detector::run()
 	else
 		data = train_data;
 */
+
+	//cout<<CV_32F<<endl;
 	Mat data;
-	if (train_hog.type() != CV_32F)
+	if (train_data.type() != CV_32F)
 		train_hog.convertTo(data, CV_32F);
 	else
 		data = train_hog;
+	
 
 	// Train the SVM
 	cout << "line:" << __LINE__ << ") Training SVM..." << endl;
@@ -664,11 +661,12 @@ void Detector::run()
 	best_W = W;
 	best_b = b;
 	best_c = C;
+	cout<< "best_W"<<W.size();
 
 	Mat W_rect(height, width, CV_64F);
 	//W_rect.data = strncpy(best_W.data);
 	W_rect = best_W.clone();
-	assert((int ) best_W.total() == width * height);
+//	assert((int ) best_W.total() == width * height);
 
 	normalize(W_rect, W_rect, 255, 0, NORM_MINMAX);
 
@@ -760,23 +758,15 @@ void Detector::run()
 
 		vector<float> descriptors;
 
-
-
-
 		Mat mv_sub_data, sv_sub_data;
 		for (size_t i = 0; i < X1.total(); ++i)
 		{
 			Mat sub = (*pyramid.at(layer))(Rect(Point(Xv[i], Yv[i]), _model_size)).clone();
 
 			hog.compute(sub, descriptors);
-			
-			// Fill vector with std:: vecotr type and pushback on matrix
-			Mat tmp = Mat::eye(1, descriptors.size(), CV_64F);
-			
-			for(int i = 0; i < descriptors.size(); i++)
-			{
-				tmp.at<float>(i) = descriptors[i];
-			}
+			Mat tmp(descriptors);
+			tmp = tmp.reshape(1, 1);
+			tmp.convertTo(tmp, CV_64F);
 			sub_windows_hog.push_back(tmp);
 
 
