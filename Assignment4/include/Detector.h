@@ -47,8 +47,8 @@ class Detector
 	void readPosFilelist(std::vector<std::string> &);
 	void readNegFilelist(std::vector<std::string> &);
 
-	void readPosData(const std::vector<std::string> &, cv::Mat &);
-	void readNegData(const std::vector<std::string> &, cv::Mat &);
+	void readPosData(const std::vector<std::string> &, cv::Mat &, cv:: Mat &);
+	void readNegData(const std::vector<std::string> &, cv::Mat &, cv:: Mat &);
 
 	void createPyramid(const cv::Mat &, std::vector<cv::Mat*> &);
 
