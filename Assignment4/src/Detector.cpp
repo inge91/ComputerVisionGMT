@@ -125,7 +125,7 @@ void Detector::readNegFilelist(vector<string> &neg_files)
 /*
  * Read positive image data
  */
-void Detector::readPosData(const std::vector<std::string> &pos_train, cv::Mat &pos_data)
+void Detector::readPosData(const std::vector<std::string> &pos_train, cv::Mat &pos_data, cv::Mat &pos_hog)
 {
 	assert(!pos_train.empty());
 
@@ -145,6 +145,18 @@ void Detector::readPosData(const std::vector<std::string> &pos_train, cv::Mat &p
 	vector<double> fps;
 	int64 t0 = Utility::get_time_curr_tick();
 	Mat pos_sum;
+					
+	HOGDescriptor hog(Size(20, 20),
+		Size(8, 8),
+		Size(4, 4),
+		Size(4, 4),
+		9, 
+		0,
+		-1, 
+		0,
+		0.2,
+		0
+		);
 
 	for (size_t f = 0; f < pos_train.size(); ++f)
 	{
@@ -153,7 +165,21 @@ void Detector::readPosData(const std::vector<std::string> &pos_train, cv::Mat &p
 		Rect rect = Rect(Point(x1, y1), Point(image.cols - x2, image.rows - y2));
 		assert(rect.area() < image.size().area());
 		Mat features = image(rect);
+		vector<float> descriptors;
+
 		resize(features, features, _model_size);
+
+		hog.compute(features, descriptors);
+		
+		// Fill vector with std:: vecotr type and pushback on matrix
+		Mat tmp = Mat::eye(1, descriptors.size(), CV_64F);
+		
+		for(int i = 0; i < descriptors.size(); i++)
+		{
+			tmp.at<float>(i) = descriptors[i];
+		}
+		pos_hog.push_back(tmp);
+
 
 		if (pos_sum.empty())
 		{
@@ -206,11 +232,22 @@ void Detector::readPosData(const std::vector<std::string> &pos_train, cv::Mat &p
 /*
  * Read negative image data
  */
-void Detector::readNegData(const std::vector<std::string> &neg_train, cv::Mat &neg_data)
+void Detector::readNegData(const std::vector<std::string> &neg_train, cv::Mat &neg_data, cv::Mat &neg_hog)
 {
 	assert(!neg_train.empty());
 
 	Mat mv_neg_data, sv_neg_data;
+	HOGDescriptor hog(Size(20, 20),
+		Size(8, 8),
+		Size(4, 4),
+		Size(4,4),
+		9, 
+		0,
+		-1, 
+		0,
+		0.2,
+		0
+		);
 
 	double factor = _pos_amount * _posneg_factor / (double) neg_train.size();
 	int fpnt = ceil(MAX(factor, 1));  //guess we should only train on super models from here on... ;)
@@ -231,7 +268,23 @@ void Detector::readNegData(const std::vector<std::string> &neg_train, cv::Mat &n
 			int y = 0 + (rand() % ((image.rows - _model_size.height) - 0));
 			assert(x + _model_size.width < image.cols);
 			assert(y + _model_size.height < image.rows);
+
+			vector<float> descriptors;
+
 			Mat features = image(Rect(Point(x, y), _model_size)).clone();
+
+			hog.compute(features, descriptors);
+		
+			// Fill vector with std:: vecotr type and pushback on matrix
+			Mat tmp = Mat::eye(1, descriptors.size(), CV_64F);
+			
+			for(int i = 0; i < descriptors.size(); i++)
+			{
+				tmp.at<float>(i) = descriptors[i];
+			}
+			neg_hog.push_back(tmp);
+
+
 
 			if (neg_sum.empty())
 			{
@@ -406,10 +459,11 @@ void Detector::run()
 	resize(pos_tmp_im, pos_tmp_sz_im, sz_dim);
 
 	Mat pos_train_data, neg_train_data;
+	Mat pos_train_hog, neg_train_hog;
 	cout << endl << "line:" << __LINE__ << ") Read training images" << endl;
 	cout << "==============================" << endl;
-	readPosData(pos_train, pos_train_data);
-	readNegData(neg_train, neg_train_data);
+	readPosData(pos_train, pos_train_data, pos_train_hog);
+	readNegData(neg_train, neg_train_data, neg_train_hog);
 	/////////////////////////////////////////////////////////////////////////////
 
 	/////////////////////////// Whitening transformation ////////////////////////
@@ -441,8 +495,12 @@ void Detector::run()
 
 	///////////// Build train / val datasets and display stuff  /////////////////
 	Mat train_data;
+	Mat train_hog;
 	train_data.push_back(_do_whitening ? whitened_pos_data : pos_train_data);
 	train_data.push_back(_do_whitening ? whitened_neg_data : neg_train_data);
+
+	train_hog.push_back(pos_train_hog.t());
+	train_hog.push_back(neg_train_hog.t());
 
 	Mat pos_labels = Mat(pos_train_data.rows, 1, CV_32S, Scalar::all(1));
 	Mat neg_labels = Mat(neg_train_data.rows, 1, CV_32S, Scalar::all(-1));
@@ -454,8 +512,9 @@ void Detector::run()
 	cout << endl << "line:" << __LINE__ << ") Read validation images" << endl;
 	cout << "==============================" << endl;
 	Mat pos_val_data, neg_val_data;
-	readPosData(pos_val, pos_val_data);
-	readNegData(neg_val, neg_val_data);
+	Mat pos_val_hog, neg_val_hog;
+	readPosData(pos_val, pos_val_data, pos_val_hog);
+	readNegData(neg_val, neg_val_data, neg_val_hog);
 
 	Mat whitened_pos_val_data, whitened_neg_val_data;
 	if (_do_whitening)
@@ -465,8 +524,11 @@ void Detector::run()
 	}
 
 	Mat val_data;
+	Mat val_hog;
 	val_data.push_back(_do_whitening ? whitened_pos_val_data : pos_val_data);
 	val_data.push_back(_do_whitening ? whitened_neg_val_data : neg_val_data);
+	val_hog.push_back(pos_val_hog);
+	val_hog.push_back(neg_val_hog);
 
 	cout << "Show windows" << endl;
 	namedWindow("Pos examples", CV_WINDOW_KEEPRATIO);
@@ -486,8 +548,9 @@ void Detector::run()
 	Mat val_gnd = ((val_labels > 0) / 255) * 2 - 1;
 	/////////////////////////////////////////////////////////////////////////////
 
-	//////////////////// Test model from mean of images /////////////////////////
-	Mat alt_pred = (val_data * _pos_sumF.t() > 0) / 255;
+	////////////////////Test model from mean of images /////////////////////////
+	//Mat alt_pred = (val_data * _pos_sumF.t() > 0) / 255;
+	Mat alt_pred = (val_hog * _pos_sumF.t() > 0) / 255;
 	double alt_true = alt_pred.size().height - sum((alt_pred == val_gnd) / 255)[0];
 	double alt_pct = (alt_true / (double) alt_pred.size().height) * 100.0;
 	cout << "Validation correct with mean model: " << alt_pct << "%" << endl;
@@ -512,11 +575,19 @@ void Detector::run()
 	params.kernel_type = SVM::LINEAR;
 	params.term_crit = TermCriteria(CV_TERMCRIT_ITER, _max_count, _epsilon);
 
+	/*
+	 *Uncomment this to work with pixel values
 	Mat data;
 	if (train_data.type() != CV_32F)
 		train_data.convertTo(data, CV_32F);
 	else
 		data = train_data;
+*/
+	Mat data;
+	if (train_hog.type() != CV_32F)
+		train_hog.convertTo(data, CV_32F);
+	else
+		data = train_hog;
 
 	// Train the SVM
 	cout << "line:" << __LINE__ << ") Training SVM..." << endl;
@@ -577,7 +648,7 @@ void Detector::run()
 	 cv::transpose(W, W2);
 
 	 Mat conf_train = data * W2 + b;
-	 Mat conf_val = val_data * W2 + b;
+	 Mat conf_val = val_hog * W2 + b;
 	
 	 Mat train_pred = (conf_train > 0) / 255;
 	 Mat val_pred = (conf_val > 0) / 255;
@@ -674,10 +745,41 @@ void Detector::run()
 
 		// Extract subwindows from image for detection
 		Mat sub_windows;
+		Mat sub_windows_hog;
+		HOGDescriptor hog(Size(20, 20),
+			Size(8, 8),
+			Size(4, 4),
+			Size(4,4),
+			9, 
+			0,
+			-1, 
+			0,
+			0.2,
+			0
+			);
+
+		vector<float> descriptors;
+
+
+
+
 		Mat mv_sub_data, sv_sub_data;
 		for (size_t i = 0; i < X1.total(); ++i)
 		{
 			Mat sub = (*pyramid.at(layer))(Rect(Point(Xv[i], Yv[i]), _model_size)).clone();
+
+			hog.compute(sub, descriptors);
+			
+			// Fill vector with std:: vecotr type and pushback on matrix
+			Mat tmp = Mat::eye(1, descriptors.size(), CV_64F);
+			
+			for(int i = 0; i < descriptors.size(); i++)
+			{
+				tmp.at<float>(i) = descriptors[i];
+			}
+			sub_windows_hog.push_back(tmp);
+
+
 			Mat sub1d = sub.reshape(1, 1);
 			Mat sub1dF;
 			sub1d.convertTo(sub1dF, CV_64F);
@@ -712,7 +814,11 @@ void Detector::run()
 		 */
 		Mat detect(sub_windows.rows, 1, CV_64F);
 
-		detect = sub_windows * W + b; 
+		// Using pixels
+		//detect = sub_windows * W + b; 
+		cout<<W<<endl;
+		cout<<detect<<endl;
+		detect = sub_windows_hog * W +b;
 		//cout<<detect<<endl;
 
 		// Show detection results as a heatmap of most likely face locations for this pyramid layer
