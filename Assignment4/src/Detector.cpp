@@ -146,10 +146,10 @@ void Detector::readPosData(const std::vector<std::string> &pos_train, cv::Mat &p
 	int64 t0 = Utility::get_time_curr_tick();
 	Mat pos_sum;
 					
-	HOGDescriptor hog(Size(20, 20),
+	HOGDescriptor hog(Size(64, 64),
+		Size(16, 16),
 		Size(8, 8),
-		Size(4, 4),
-		Size(4, 4),
+		Size(8, 8),
 		9, 
 		0,
 		-1, 
@@ -167,14 +167,19 @@ void Detector::readPosData(const std::vector<std::string> &pos_train, cv::Mat &p
 		Mat features = image(rect);
 		vector<float> descriptors;
 
-		resize(features, features, _model_size);
+		resize(features, features, Size(64, 64));
 
+		cout<<features.type()<<endl;
+		cout<<features.size()<<endl;
 		hog.compute(features, descriptors);
+		cout<<descriptors.size()<<endl;
 		Mat tmp(descriptors);
+		
 		
 		tmp = tmp.reshape(1, 1);
 		tmp.convertTo(tmp, CV_64F);
 		pos_hog.push_back(tmp);
+		resize(features, features, _model_size);
 
 
 		if (pos_sum.empty())
@@ -233,10 +238,10 @@ void Detector::readNegData(const std::vector<std::string> &neg_train, cv::Mat &n
 	assert(!neg_train.empty());
 
 	Mat mv_neg_data, sv_neg_data;
-	HOGDescriptor hog(Size(20, 20),
+	HOGDescriptor hog(Size(64, 64),
+		Size(16, 16),
 		Size(8, 8),
-		Size(4, 4),
-		Size(4,4),
+		Size(8, 8),
 		9, 
 		0,
 		-1, 
@@ -267,7 +272,8 @@ void Detector::readNegData(const std::vector<std::string> &neg_train, cv::Mat &n
 
 			vector<float> descriptors;
 
-			Mat features = image(Rect(Point(x, y), _model_size)).clone();
+			Mat features = image(Rect(Point(0, 0), Size(64,64))).clone();
+			
 
 			hog.compute(features, descriptors);
 			Mat tmp(descriptors);
@@ -277,6 +283,7 @@ void Detector::readNegData(const std::vector<std::string> &neg_train, cv::Mat &n
 			tmp.convertTo(tmp, CV_64F);
 			neg_hog.push_back(tmp);
 
+			resize(features,  features, _model_size);
 
 
 			if (neg_sum.empty())
@@ -582,6 +589,7 @@ void Detector::run()
 	else
 		data = train_hog;
 	
+	cout<<train_hog.size()<<endl;
 
 	// Train the SVM
 	cout << "line:" << __LINE__ << ") Training SVM..." << endl;
@@ -644,6 +652,9 @@ void Detector::run()
 	 Mat conf_train = data * W2 + b;
 	 Mat conf_val = val_hog * W2 + b;
 	
+	 cout<< W.size()<<endl;
+	 cout<< val_hog.size()<<endl;
+	 cout<< data.size()<<endl;
 	 Mat train_pred = (conf_train > 0) / 255;
 	 Mat val_pred = (conf_val > 0) / 255;
 	 double train_true = train_pred.rows - sum((train_pred == train_gnd) / 255)[0];
@@ -658,22 +669,21 @@ void Detector::run()
 	best_W = W;
 	best_b = b;
 	best_c = C;
-	cout<< "best_W"<<W.size();
 
-	Mat W_rect(height, width, CV_64F);
+	//Mat W_rect(height, width, CV_64F);
 	//W_rect.data = strncpy(best_W.data);
-	W_rect = best_W.clone();
+	//W_rect = best_W.clone();
 //	assert((int ) best_W.total() == width * height);
 
-	normalize(W_rect, W_rect, 255, 0, NORM_MINMAX);
+	//normalize(W_rect, W_rect, 255, 0, NORM_MINMAX);
 
 	
-	Mat W_img, nW_img;
-	W_rect.convertTo(W_img, CV_8U);
-	bitwise_not(W_img, nW_img);
-	imshow("Model", nW_img);
-	cout << "Press a key to continue" << endl;
-	waitKey();
+	//Mat W_img, nW_img;
+	//W_rect.convertTo(W_img, CV_8U);
+	//bitwise_not(W_img, nW_img);
+	//imshow("Model", nW_img);
+	//cout << "Press a key to continue" << endl;
+	//waitKey();
 	/////////////////////////////////////////////////////////////////////////////
 
 	////////////////////////////// Test on real image ///////////////////////////
@@ -695,6 +705,7 @@ void Detector::run()
 			ground_truths.push_back(Rect(x, y, width, height));
 		}
 	}
+
 
 	Mat query_image = imread(_query_image_file);
 	double bside = MAX(query_image.rows, query_image.cols);
@@ -741,10 +752,10 @@ void Detector::run()
 		// Extract subwindows from image for detection
 		Mat sub_windows;
 		Mat sub_windows_hog;
-		HOGDescriptor hog(Size(20, 20),
+		HOGDescriptor hog(Size(64, 64),
+			Size(16, 16),
 			Size(8, 8),
-			Size(4, 4),
-			Size(4,4),
+			Size(8, 8),
 			9, 
 			0,
 			-1, 
@@ -753,19 +764,22 @@ void Detector::run()
 			0
 			);
 
-		vector<float> descriptors;
 
 		Mat mv_sub_data, sv_sub_data;
 		for (size_t i = 0; i < X1.total(); ++i)
 		{
 			Mat sub = (*pyramid.at(layer))(Rect(Point(Xv[i], Yv[i]), _model_size)).clone();
 
+			resize(sub, sub, Size(64, 64));
+			vector<float> descriptors;
+			vector<float> descriptors2;
 			hog.compute(sub, descriptors);
 			Mat tmp(descriptors);
 			tmp = tmp.reshape(1, 1);
 			tmp.convertTo(tmp, CV_64F);
+			//cout<<tmp.size()<<endl;
 			sub_windows_hog.push_back(tmp);
-
+			resize(sub, sub, Size(20, 20));
 
 			Mat sub1d = sub.reshape(1, 1);
 			Mat sub1dF;
