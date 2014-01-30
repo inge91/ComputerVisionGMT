@@ -365,11 +365,9 @@ void Detector::createPyramid(const Mat &image, vector<Mat*> &pyramid)
 
   	int max_layers = 1 + floor(tmp3 / tmp4);
 
-	cout<<" Max layers " <<max_layers; 
 
 	int m;
 	m = MAX(max_layers, _layer_scale_interval) + _layer_scale_interval;
-	cout<<"m "<<m<<endl;
 	// width and height of the original image size
 	cv::Size s = image.size();
 	double w = s.width;
@@ -543,7 +541,6 @@ void Detector::run()
 
 	////////////////////Test model from mean of images /////////////////////////
 	//Mat alt_pred = (val_data * _pos_sumF.t() > 0) / 255;
-	cout<<val_hog.size()<<endl;
 	Mat alt_pred = (val_data * _pos_sumF.t() > 0) / 255;
 	double alt_true = alt_pred.size().height - sum((alt_pred == val_gnd) / 255)[0];
 	double alt_pct = (alt_true / (double) alt_pred.size().height) * 100.0;
@@ -806,8 +803,6 @@ void Detector::run()
 
 		// Using pixels
 		//detect = sub_windows * W + b; 
-		cout<<W<<endl;
-		cout<<detect<<endl;
 		detect = sub_windows_hog * W +b;
 		//cout<<detect<<endl;
 
