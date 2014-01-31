@@ -938,20 +938,33 @@ void Detector::run()
 			if (!ground_truths.empty())
 			{
 				vector<Rect> search_gt = ground_truths;
+				double truePositives = 0;
+				double falsePositives = 0;
+				double falseNegatives = search_gt.size();
 				for (size_t r = 0; r < rects.size(); ++r)
 				{
 					Rect detection = rects.at(r);
+					falsePositives++;
 
 					vector<Rect>::iterator it = search_gt.begin();
 					for (; it != search_gt.end();)
 					{
 						Rect ground_truth = *it;
-						double intersection_size = 0;
+						
+						Rect intersection = ground_truth & detection;
+						double itArea = ground_truth.width * ground_truth.height;
+						double intersectionArea = intersection.width * intersection.height;
+						double intersectionRatio = intersectionArea / itArea;
+						
+						double intersection_size = intersectionRatio;
 
 						if (intersection_size >= _gt_accuracy)
 						{
 							// if size is equal or larger than the accuracy threshold we have found a true positive
 							it = search_gt.erase(it);
+							truePositives++;
+							falsePositives--;
+							break;
 						}
 						else
 						{
@@ -959,9 +972,13 @@ void Detector::run()
 						}
 					}
 				}
+				falseNegatives -= truePositives;
 
 				// Calculate the Precision and Recall at the currect threshold value
-				double precision = 0, recall = 0;
+				double precision = truePositives / (truePositives + falsePositives);
+				precision *= 100;
+				double recall = truePositives / (truePositives + falseNegatives);
+				recall *= 100;
 				char p_buf[32], r_buf[32];
 				sprintf(p_buf, "%4.2f", precision);
 				sprintf(r_buf, "%4.2f", recall);
